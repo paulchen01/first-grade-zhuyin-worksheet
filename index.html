@@ -319,20 +319,20 @@
     .practice-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 9px 12px;
+      gap: 11px 12px;
     }
 
     .practice-cell {
-      min-height: 100px;
+      min-height: 136px;
       display: grid;
       grid-template-columns: 1fr;
       grid-template-rows: repeat(2, 1fr);
-      gap: 6px;
+      gap: 8px;
     }
 
     .practice-row {
       display: grid;
-      grid-template-columns: 62px 1fr;
+      grid-template-columns: 68px 1fr;
       min-height: 0;
       border: 1.4px solid var(--grid);
       background: #fff;
@@ -343,7 +343,7 @@
       place-items: center;
       border-right: 1.4px solid var(--grid);
       color: #1f2933;
-      font-size: 18pt;
+      font-size: 20pt;
       font-weight: 700;
       line-height: 1;
       padding: 6px;
@@ -391,7 +391,7 @@
     }
 
     .draw-box {
-      min-height: 260px;
+      min-height: 220px;
       height: 100%;
       border: 2px solid #9da8b7;
       background:
@@ -418,7 +418,7 @@
       background: #fff;
       border-radius: 8px;
       padding: 10px;
-      min-height: 260px;
+      min-height: 220px;
       height: 100%;
     }
 
@@ -434,7 +434,7 @@
     }
 
     .free-response {
-      min-height: 195px;
+      min-height: 160px;
       margin-top: 12px;
     }
 
@@ -549,17 +549,21 @@
       }
 
       .practice-cell {
-        min-height: 86px;
-        gap: 5px;
+        min-height: 124px;
+        gap: 7px;
       }
 
       .practice-row {
-        grid-template-columns: 56px 1fr;
+        grid-template-columns: 64px 1fr;
+      }
+
+      .practice-cell .model {
+        font-size: 19pt;
       }
 
       .draw-box,
       .answer-box {
-        min-height: 238px;
+        min-height: 198px;
       }
 
       .draw-label {
@@ -576,7 +580,7 @@
       }
 
       .free-response {
-        min-height: 190px;
+        min-height: 150px;
       }
 
       .footer-note {
