@@ -641,15 +641,6 @@
       </div>
 
       <div class="control-group">
-        <div class="field">
-          <label for="rubyText">注音對照</label>
-          <textarea id="rubyText"></textarea>
-          <p class="hint">格式：字=注音，每行一組。例：山=ㄕㄢ。</p>
-        </div>
-        <button class="wide-button" id="applyBtn" type="button">更新預覽</button>
-      </div>
-
-      <div class="control-group">
         <div class="actions">
           <button id="saveBtn" type="button">存成PDF</button>
           <button id="resetBtn" type="button">列印</button>
@@ -2417,7 +2408,6 @@
     const practiceText = document.getElementById("practiceText");
     const questionText = document.getElementById("questionText");
     const drawText = document.getElementById("drawText");
-    const rubyText = document.getElementById("rubyText");
 
     function todayString() {
       const today = new Date();
@@ -2455,16 +2445,7 @@
     }
 
     function parseRubyInput() {
-      const next = { ...baseRuby };
-      rubyText.value.split(/\n+/).forEach((line) => {
-        const trimmed = line.trim();
-        if (!trimmed) return;
-        const parts = trimmed.split(/[=：:,\s]+/).filter(Boolean);
-        if (parts.length >= 2) {
-          next[parts[0]] = parts[1];
-        }
-      });
-      state.ruby = next;
+      state.ruby = { ...baseRuby };
     }
 
     function escapeHTML(value) {
@@ -2519,9 +2500,14 @@
     function completePracticeTerms(terms, fallbackTerms = []) {
       const result = [];
       const safeNounFallbacks = ["同學", "老師", "書包", "鉛筆", "桌子", "水壺", "圖畫", "卡片"];
+      const blockedTerms = new Set([
+        "我和", "我們", "你們", "他們", "她們", "一起", "可以", "怎麼",
+        "以後", "再做", "做錯", "說出", "告訴", "對不起", "請你"
+      ]);
       [...terms, ...fallbackTerms, ...safeNounFallbacks].forEach((term) => {
         const clean = String(term || "").replace(/\s/g, "");
-        if (clean && !result.includes(clean)) result.push(clean.slice(0, 4));
+        const isBlocked = Array.from(blockedTerms).some((blocked) => clean.includes(blocked));
+        if (clean && !isBlocked && !result.includes(clean)) result.push(clean.slice(0, 4));
       });
       return result.slice(0, 4);
     }
@@ -2563,6 +2549,8 @@
 
     function render() {
       parseRubyInput();
+      const normalizedPractice = normalizePracticeText(practiceText.value, state.active.practice);
+      if (practiceText.value !== normalizedPractice) practiceText.value = normalizedPractice;
       document.getElementById("sheetTitle").textContent = customTitle.value || "一年級國語注音學習單";
       document.getElementById("sheetSubtitle").textContent = state.active.subtitle;
       document.getElementById("nameLine").textContent = studentName.value;
@@ -2591,8 +2579,7 @@
         story: storyText.value,
         practice: practiceText.value,
         question: questionText.value,
-        drawing: drawText.value,
-        ruby: rubyText.value
+        drawing: drawText.value
       };
       localStorage.setItem("first-grade-zhuyin-worksheet", JSON.stringify(payload));
     }
@@ -2611,7 +2598,6 @@
         practiceText.value = normalizePracticeText(payload.practice || sheet.practice, sheet.practice);
         questionText.value = payload.question || sheet.question;
         drawText.value = payload.drawing || sheet.drawing;
-        rubyText.value = payload.ruby || "";
         render();
         return true;
       } catch (error) {
@@ -2620,7 +2606,6 @@
     }
 
     fillThemeOptions();
-    rubyText.value = "";
     if (!restoreSaved()) {
       loadSheet(sheets[0]);
     }
@@ -2631,7 +2616,6 @@
     });
 
     document.getElementById("randomBtn").addEventListener("click", randomSheet);
-    document.getElementById("applyBtn").addEventListener("click", render);
     document.getElementById("saveBtn").addEventListener("click", () => {
       saveCurrent();
       render();
@@ -2641,7 +2625,7 @@
       window.print();
     });
 
-    [studentName, customTitle, storyText, practiceText, questionText, drawText, rubyText]
+    [studentName, customTitle, storyText, practiceText, questionText, drawText]
       .forEach((el) => el.addEventListener("input", render));
   </script>
 </body>
