@@ -204,17 +204,34 @@
 
     .meta-grid {
       display: grid;
-      grid-template-columns: 1.1fr .9fr .9fr;
-      gap: 10px;
-      margin-top: 12px;
+      grid-template-columns: minmax(0, 1.45fr) minmax(0, .8fr);
+      gap: 18px;
+      margin-top: 14px;
       font-size: 12.5pt;
+    }
+
+    .meta-field {
+      display: flex;
+      align-items: flex-end;
+      min-height: 34px;
     }
 
     .blank-line {
       display: inline-block;
-      min-width: 7em;
+      min-width: 8em;
+      height: 24px;
       border-bottom: 1.5px solid #6b7280;
-      transform: translateY(-2px);
+      transform: translateY(1px);
+    }
+
+    .meta-name .blank-line {
+      flex: 1;
+      min-width: 12em;
+      height: 28px;
+    }
+
+    .meta-date .blank-line {
+      min-width: 8.5em;
     }
 
     .section {
@@ -310,12 +327,12 @@
 
     .practice-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 10px;
     }
 
     .practice-cell {
-      min-height: 122px;
+      min-height: 104px;
       display: grid;
       grid-template-columns: 1fr;
       grid-template-rows: repeat(2, 1fr);
@@ -360,20 +377,6 @@
 
     .practice-cell .model .bpmf-tone {
       font-size: .32em;
-    }
-
-    .practice-cell .trace {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      min-width: 0;
-    }
-
-    .practice-cell .trace span {
-      border-right: 1px dashed #cbd5e1;
-    }
-
-    .practice-cell .trace span:last-child {
-      border-right: 0;
     }
 
     .activity-grid {
@@ -433,9 +436,9 @@
       margin-top: auto;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 14px;
+      gap: 28px;
       font-size: 12pt;
-      padding-top: 12px;
+      padding-top: 16px;
     }
 
     .small-lines {
@@ -508,10 +511,24 @@
 
       .meta-grid {
         margin-top: 7px;
+        grid-template-columns: 1.45fr .8fr;
+        gap: 14px;
+      }
+
+      .meta-field {
+        min-height: 29px;
+      }
+
+      .meta-name .blank-line {
+        height: 24px;
+      }
+
+      .meta-date .blank-line {
+        min-width: 7.5em;
       }
 
       .section {
-        margin-top: 10px;
+        margin-top: 8px;
       }
 
       .section-title {
@@ -522,28 +539,28 @@
       .story-box {
         padding: 7px 10px 6px;
         font-size: 14pt;
-        line-height: 1.78;
+        line-height: 1.68;
       }
 
       .copy-lines {
-        gap: 8px;
+        gap: 7px;
       }
 
       .copy-line {
-        height: 33px;
+        height: 31px;
       }
 
       .practice-cell {
-        min-height: 116px;
+        min-height: 92px;
       }
 
       .practice-row {
-        grid-template-columns: 58px 1fr;
+        grid-template-columns: 56px 1fr;
       }
 
       .draw-box,
       .answer-box {
-        min-height: 218px;
+        min-height: 188px;
       }
 
       .draw-label {
@@ -566,7 +583,8 @@
       .footer-note {
         margin-top: auto;
         font-size: 10.5pt;
-        padding-top: 10px;
+        gap: 24px;
+        padding-top: 13px;
       }
     }
   </style>
@@ -649,9 +667,8 @@
         </header>
 
         <div class="meta-grid">
-          <div>姓名：<span class="blank-line" id="nameLine"></span></div>
-          <div>日期：<span class="blank-line" id="dateLine"></span></div>
-          <div>家長：<span class="blank-line"></span></div>
+          <div class="meta-field meta-name">姓名：<span class="blank-line" id="nameLine"></span></div>
+          <div class="meta-field meta-date">日期：<span class="blank-line" id="dateLine"></span></div>
         </div>
 
         <section class="section">
@@ -1690,18 +1707,38 @@
     function getPracticeTerms(value) {
       const raw = String(value || "").trim();
       if (!raw) return [];
-      const explicitTerms = raw.split(/[，、,\n]+/).map((term) => term.trim()).filter(Boolean);
-      if (explicitTerms.length > 1) return explicitTerms.slice(0, 3);
+      const explicitTerms = raw.split(/[\u3001\uff0c,\n]+/).map((term) => term.trim()).filter(Boolean);
+      if (explicitTerms.length > 1) return explicitTerms.slice(0, 4);
       const compact = raw.replace(/\s/g, "");
       const terms = [];
-      for (let i = 0; i < compact.length && terms.length < 3; i += 2) {
+      for (let i = 0; i < compact.length && terms.length < 4; i += 2) {
         terms.push(compact.slice(i, i + 2));
       }
       return terms;
     }
 
+    function completePracticeTerms(terms) {
+      const result = [];
+      terms.forEach((term) => {
+        const clean = String(term || "").replace(/\s/g, "");
+        if (clean && !result.includes(clean)) result.push(clean.slice(0, 2));
+      });
+
+      const skipTerms = new Set(["我有", "我會", "可以", "一起", "今天", "我們", "老師", "小朋", "朋友"]);
+      const storyChars = String(storyText.value || "").replace(/[^\u4e00-\u9fff]/g, "");
+      for (let i = 0; i < storyChars.length - 1 && result.length < 4; i += 2) {
+        const term = storyChars.slice(i, i + 2);
+        if (term.length === 2 && !result.includes(term) && !skipTerms.has(term)) {
+          result.push(term);
+        }
+      }
+
+      while (result.length < 4) result.push("");
+      return result.slice(0, 4);
+    }
+
     function renderPractice() {
-      const terms = getPracticeTerms(practiceText.value);
+      const terms = completePracticeTerms(getPracticeTerms(practiceText.value));
       const grid = document.getElementById("practiceGrid");
       grid.innerHTML = "";
       terms.forEach((term) => {
