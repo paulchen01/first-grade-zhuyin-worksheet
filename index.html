@@ -351,8 +351,12 @@
 
     .practice-write {
       min-width: 0;
-      background:
-        linear-gradient(90deg, transparent 49.4%, rgba(203, 213, 225, .72) 49.5%, rgba(203, 213, 225, .72) 50.5%, transparent 50.6%);
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .practice-write span + span {
+      border-left: 2px solid var(--grid);
     }
 
     .practice-cell .model .phonetic-char {
@@ -374,8 +378,21 @@
       align-items: stretch;
     }
 
+    .section-activity {
+      flex: 1 1 auto;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .section-activity .activity-grid {
+      flex: 1 1 auto;
+      min-height: 0;
+    }
+
     .draw-box {
       min-height: 260px;
+      height: 100%;
       border: 2px solid #9da8b7;
       background:
         linear-gradient(#ffffff 31px, transparent 32px),
@@ -402,6 +419,7 @@
       border-radius: 8px;
       padding: 10px;
       min-height: 260px;
+      height: 100%;
     }
 
     .prompt {
@@ -421,7 +439,7 @@
     }
 
     .footer-note {
-      margin-top: auto;
+      margin-top: 14px;
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 28px;
@@ -562,7 +580,7 @@
       }
 
       .footer-note {
-        margin-top: auto;
+        margin-top: 10px;
         font-size: 10.5pt;
         gap: 24px;
         padding-top: 13px;
@@ -661,7 +679,7 @@
           <div class="practice-grid" id="practiceGrid"></div>
         </section>
 
-        <section class="section">
+        <section class="section section-activity">
           <h3 class="section-title" id="sectionTitleThree"></h3>
           <div class="activity-grid">
             <div class="draw-box">
@@ -1721,7 +1739,7 @@
         item.innerHTML = chars.map((char) => `
           <div class="practice-row">
             <div class="model">${char ? renderRuby(char) : ""}</div>
-            <div class="practice-write"></div>
+            <div class="practice-write"><span></span><span></span></div>
           </div>
         `).join("");
         grid.appendChild(item);
