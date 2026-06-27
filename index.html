@@ -1,0 +1,938 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>一年級注音學習單產生器</title>
+  <style>
+    :root {
+      --ink: #1f2933;
+      --muted: #5f6b7a;
+      --line: #c9d2df;
+      --paper: #fffdf8;
+      --panel: #f4f7fb;
+      --accent: #2f6f73;
+      --accent-2: #b4532a;
+      --soft: #eaf3f1;
+      --grid: #d9e0ea;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #e8edf3;
+      font-family: "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", sans-serif;
+      line-height: 1.55;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: minmax(280px, 360px) 1fr;
+      min-height: 100vh;
+    }
+
+    .controls {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: auto;
+      padding: 22px;
+      background: var(--panel);
+      border-right: 1px solid #d7dee8;
+    }
+
+    .controls h1 {
+      margin: 0 0 16px;
+      font-size: 1.35rem;
+      line-height: 1.25;
+    }
+
+    .control-group {
+      margin: 0 0 18px;
+      padding-top: 16px;
+      border-top: 1px solid #d7dee8;
+    }
+
+    .control-group:first-of-type {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    label {
+      display: block;
+      margin: 0 0 6px;
+      color: #334155;
+      font-weight: 700;
+      font-size: .95rem;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid #c7d0dc;
+      border-radius: 6px;
+      background: #fff;
+      color: var(--ink);
+      padding: 9px 10px;
+    }
+
+    textarea {
+      min-height: 84px;
+      resize: vertical;
+    }
+
+    .field {
+      margin-bottom: 12px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .actions button,
+    .wide-button {
+      border: 1px solid #b8c4d2;
+      border-radius: 6px;
+      background: #fff;
+      color: var(--ink);
+      padding: 9px 10px;
+      cursor: pointer;
+      min-height: 42px;
+    }
+
+    .actions button:hover,
+    .wide-button:hover {
+      background: #f8fafc;
+    }
+
+    .primary {
+      background: var(--accent) !important;
+      border-color: var(--accent) !important;
+      color: #fff !important;
+    }
+
+    .warn {
+      color: var(--accent-2);
+      border-color: #e2b49f !important;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: .86rem;
+      margin: 6px 0 0;
+    }
+
+    .preview-shell {
+      padding: 28px;
+      overflow: auto;
+    }
+
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 0 auto 28px;
+      padding: 13mm 14mm;
+      background: var(--paper);
+      box-shadow: 0 10px 35px rgba(15, 23, 42, .16);
+      font-family: "BopomofoRuby1909-v1", "BpmfZihiSans", "DFKai-SB", "KaiTi", "Noto Sans TC", "Microsoft JhengHei", serif;
+    }
+
+    .sheet-header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: end;
+      padding-bottom: 10px;
+      border-bottom: 3px solid var(--accent);
+    }
+
+    .sheet-title {
+      margin: 0;
+      font-size: 25pt;
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    .sheet-subtitle {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 12pt;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr .9fr;
+      gap: 10px;
+      margin-top: 12px;
+      font-size: 12.5pt;
+    }
+
+    .blank-line {
+      display: inline-block;
+      min-width: 7em;
+      border-bottom: 1.5px solid #6b7280;
+      transform: translateY(-2px);
+    }
+
+    .section {
+      margin-top: 13px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 8px;
+      font-size: 15pt;
+      line-height: 1.25;
+    }
+
+    .section-title .tag {
+      display: inline-grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 700;
+      font-size: 12pt;
+    }
+
+    .story-box {
+      padding: 10px 12px 8px;
+      background: var(--soft);
+      border: 1px solid #c8dad5;
+      border-radius: 8px;
+      font-size: 17pt;
+      line-height: 2.15;
+    }
+
+    .phonetic-char {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .08em;
+      vertical-align: middle;
+      margin: 0 .02em;
+      white-space: nowrap;
+    }
+
+    .phonetic-char .han {
+      line-height: 1;
+    }
+
+    .bpmf-wrap {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: .66em;
+      transform: translateY(-.04em);
+    }
+
+    .bpmf-stack {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: .02em;
+      color: #334155;
+      font-size: .44em;
+      font-family: "BopomofoRuby1909-v1", "BpmfZihiSans", "Microsoft JhengHei", sans-serif;
+      font-weight: 500;
+      line-height: .95;
+      letter-spacing: 0;
+    }
+
+    .bpmf-tone {
+      align-self: center;
+      margin-left: .05em;
+      color: #334155;
+      font-family: "BopomofoRuby1909-v1", "BpmfZihiSans", "Microsoft JhengHei", sans-serif;
+      font-size: .38em;
+      line-height: 1;
+      transform: translateY(.08em);
+    }
+
+    .copy-lines {
+      margin-top: 8px;
+      display: grid;
+      gap: 7px;
+    }
+
+    .copy-line {
+      height: 30px;
+      border-bottom: 1.5px solid #8a94a3;
+    }
+
+    .practice-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .practice-cell {
+      min-height: 70px;
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      border: 1.4px solid var(--grid);
+      background: #fff;
+    }
+
+    .practice-cell .model {
+      display: grid;
+      place-items: center;
+      border-right: 1.4px solid var(--grid);
+      color: #1f2933;
+      font-size: 18pt;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .practice-cell .model .phonetic-char {
+      gap: .05em;
+    }
+
+    .practice-cell .model .bpmf-stack {
+      font-size: .36em;
+    }
+
+    .practice-cell .model .bpmf-tone {
+      font-size: .32em;
+    }
+
+    .practice-cell .trace {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      min-width: 0;
+    }
+
+    .practice-cell .trace span {
+      border-right: 1px dashed #cbd5e1;
+    }
+
+    .practice-cell .trace span:last-child {
+      border-right: 0;
+    }
+
+    .activity-grid {
+      display: grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .draw-box {
+      min-height: 210px;
+      border: 2px solid #9da8b7;
+      background:
+        linear-gradient(#ffffff 31px, transparent 32px),
+        linear-gradient(90deg, #ffffff 31px, transparent 32px);
+      background-size: 32px 32px;
+      border-radius: 8px;
+      position: relative;
+    }
+
+    .draw-label {
+      position: absolute;
+      top: 8px;
+      left: 10px;
+      padding: 2px 7px;
+      background: rgba(255, 253, 248, .92);
+      color: var(--muted);
+      font-size: 11pt;
+      border-radius: 4px;
+    }
+
+    .answer-box {
+      border: 1.5px solid var(--grid);
+      background: #fff;
+      border-radius: 8px;
+      padding: 10px;
+      min-height: 210px;
+    }
+
+    .prompt {
+      margin: 0 0 8px;
+      font-size: 13pt;
+      font-weight: 700;
+    }
+
+    .answer-line {
+      height: 32px;
+      border-bottom: 1.4px solid #8a94a3;
+    }
+
+    .zhuyin-strip {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .zhuyin-box {
+      min-height: 46px;
+      border: 1.4px solid var(--grid);
+      background: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 15pt;
+      color: #334155;
+    }
+
+    .zhuyin-box .bpmf-wrap {
+      transform: none;
+    }
+
+    .zhuyin-box .bpmf-stack {
+      font-size: 1em;
+    }
+
+    .zhuyin-box .bpmf-tone {
+      font-size: .86em;
+    }
+
+    .footer-note {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      font-size: 12pt;
+    }
+
+    .small-lines {
+      display: grid;
+      gap: 9px;
+      margin-top: 7px;
+    }
+
+    @media (max-width: 980px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+
+      .controls {
+        position: static;
+        height: auto;
+      }
+
+      .preview-shell {
+        padding: 14px;
+      }
+
+      .page {
+        width: min(100%, 210mm);
+        min-height: auto;
+      }
+    }
+
+    @page {
+      size: A4;
+      margin: 0;
+    }
+
+    @media print {
+      body {
+        background: #fff;
+      }
+
+      .controls {
+        display: none;
+      }
+
+      .app {
+        display: block;
+      }
+
+      .preview-shell {
+        padding: 0;
+        overflow: visible;
+      }
+
+      .page {
+        width: 210mm;
+        min-height: 297mm;
+        margin: 0;
+        box-shadow: none;
+        break-after: page;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <aside class="controls" aria-label="學習單控制區">
+      <h1>一年級注音學習單產生器</h1>
+
+      <div class="control-group">
+        <div class="field">
+          <label for="themeSelect">主題</label>
+          <select id="themeSelect"></select>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label for="studentName">姓名</label>
+            <input id="studentName" value="" placeholder="學生姓名">
+          </div>
+          <div class="field">
+            <label for="sheetDate">日期</label>
+            <input id="sheetDate" type="date">
+          </div>
+        </div>
+        <div class="actions">
+          <button class="primary" id="randomBtn" type="button">隨機產生</button>
+          <button id="printBtn" type="button">列印</button>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <div class="field">
+          <label for="customTitle">標題</label>
+          <input id="customTitle" value="一年級國語注音學習單">
+        </div>
+        <div class="field">
+          <label for="storyText">短文</label>
+          <textarea id="storyText"></textarea>
+        </div>
+        <div class="field">
+          <label for="practiceText">注音練習字</label>
+          <input id="practiceText">
+        </div>
+        <div class="field">
+          <label for="questionText">問題</label>
+          <textarea id="questionText"></textarea>
+        </div>
+        <div class="field">
+          <label for="drawText">畫圖題</label>
+          <input id="drawText">
+        </div>
+      </div>
+
+      <div class="control-group">
+        <div class="field">
+          <label for="rubyText">注音對照</label>
+          <textarea id="rubyText"></textarea>
+          <p class="hint">格式：字=注音，每行一組。例：山=ㄕㄢ。</p>
+        </div>
+        <button class="wide-button" id="applyBtn" type="button">更新預覽</button>
+      </div>
+
+      <div class="control-group">
+        <div class="actions">
+          <button id="googleTextBtn" type="button">Google搜尋</button>
+          <button id="googleImageBtn" type="button">Google圖片</button>
+        </div>
+        <div class="actions" style="margin-top:8px;">
+          <button id="saveBtn" type="button">儲存內容</button>
+          <button class="warn" id="resetBtn" type="button">還原範例</button>
+        </div>
+      </div>
+    </aside>
+
+    <section class="preview-shell" aria-label="學習單預覽">
+      <article class="page" id="worksheet">
+        <header class="sheet-header">
+          <div>
+            <h2 class="sheet-title" id="sheetTitle"></h2>
+            <p class="sheet-subtitle" id="sheetSubtitle"></p>
+          </div>
+          <div aria-hidden="true" style="font-size:36pt;color:var(--accent);line-height:1;">ㄅ</div>
+        </header>
+
+        <div class="meta-grid">
+          <div>姓名：<span class="blank-line" id="nameLine"></span></div>
+          <div>日期：<span class="blank-line" id="dateLine"></span></div>
+          <div>家長：<span class="blank-line"></span></div>
+        </div>
+
+        <section class="section">
+          <h3 class="section-title"><span class="tag">一</span><span>讀一讀，抄一抄</span></h3>
+          <div class="story-box" id="storyBox"></div>
+          <div class="copy-lines" aria-hidden="true">
+            <div class="copy-line"></div>
+            <div class="copy-line"></div>
+            <div class="copy-line"></div>
+            <div class="copy-line"></div>
+          </div>
+        </section>
+
+        <section class="section">
+          <h3 class="section-title"><span class="tag">二</span><span>注音練習</span></h3>
+          <div class="practice-grid" id="practiceGrid"></div>
+        </section>
+
+        <section class="section">
+          <h3 class="section-title"><span class="tag">三</span><span>畫一畫，寫一寫</span></h3>
+          <div class="activity-grid">
+            <div class="draw-box">
+              <div class="draw-label" id="drawLabel"></div>
+            </div>
+            <div class="answer-box">
+              <p class="prompt" id="questionBox"></p>
+              <div class="answer-line"></div>
+              <div class="answer-line"></div>
+              <div class="answer-line"></div>
+              <p class="prompt" style="margin-top:12px;">我會寫注音：</p>
+              <div class="zhuyin-strip" id="zhuyinStrip"></div>
+            </div>
+          </div>
+        </section>
+
+        <footer class="footer-note">
+          <div>
+            今日小任務：<span id="taskText"></span>
+            <div class="small-lines">
+              <div class="answer-line"></div>
+            </div>
+          </div>
+          <div>
+            我覺得今天：
+            <div class="small-lines">
+              <div class="answer-line"></div>
+            </div>
+          </div>
+        </footer>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const sheets = [
+      {
+        key: "park",
+        label: "公園散步",
+        topic: "觀察",
+        subtitle: "主題：公園散步",
+        story: "今天早上，我和媽媽去公園。樹上有綠葉，地上有小花。我看一看，也慢慢說出看到的東西。",
+        practice: "公園媽媽樹葉小花看說",
+        question: "故事裡，孩子在公園看到什麼？",
+        drawing: "畫出公園裡的一樣東西",
+        task: "和家人說出今天看到的一種顏色。"
+      },
+      {
+        key: "rain",
+        label: "雨天上學",
+        topic: "照顧",
+        subtitle: "主題：雨天上學",
+        story: "早上，下起小雨。爸爸幫我拿雨衣，我自己背好書包。到學校時，我跟爸爸說謝謝。",
+        practice: "早雨爸爸我書包學校謝",
+        question: "故事裡，誰幫孩子拿雨衣？",
+        drawing: "畫出一件雨天會用到的東西",
+        task: "回家後，把雨具放在固定的位置。"
+      },
+      {
+        key: "library",
+        label: "圖書角",
+        topic: "閱讀",
+        subtitle: "主題：圖書角",
+        story: "下課時，我走到圖書角。桌上有一本故事書，我安靜地看。看到好笑的地方，我小聲笑了。",
+        practice: "下課圖書故事安靜看笑",
+        question: "孩子在圖書角做了什麼？",
+        drawing: "畫出一本你想看的書",
+        task: "今天選一本書，翻開看三頁。"
+      },
+      {
+        key: "homework",
+        label: "完成作業",
+        topic: "專心",
+        subtitle: "主題：完成作業",
+        story: "晚飯後，我坐在書桌前。鉛筆和橡皮都放好了。我先寫一行注音，再休息一下。",
+        practice: "晚飯書桌鉛筆橡皮寫行",
+        question: "孩子先寫了什麼？",
+        drawing: "畫出你寫作業時會用的文具",
+        task: "完成一小段功課後，把文具收好。"
+      },
+      {
+        key: "friend",
+        label: "和同學分享",
+        topic: "分享",
+        subtitle: "主題：和同學分享",
+        story: "美勞課時，我有兩張色紙。同學少了一張，我分給他一張。他笑著說謝謝，我也很開心。",
+        practice: "美勞同學色紙分給開心",
+        question: "孩子把什麼分給同學？",
+        drawing: "畫出你願意分享的一樣東西",
+        task: "今天對一位同學或家人說一句好話。"
+      },
+      {
+        key: "plant",
+        label: "照顧小芽",
+        topic: "耐心",
+        subtitle: "主題：照顧小芽",
+        story: "窗邊有一盆小芽。我輕輕澆水，也看看泥土。小芽還很小，我會每天來看它。",
+        practice: "窗邊小芽輕水泥土每天",
+        question: "孩子每天想看什麼？",
+        drawing: "畫出一棵正在長大的植物",
+        task: "觀察家裡或路邊的一片葉子。"
+      }
+    ];
+
+    const baseRuby = {
+      "一": "ㄧ", "二": "ㄦˋ", "三": "ㄙㄢ", "上": "ㄕㄤˋ", "下": "ㄒㄧㄚˋ",
+      "小": "ㄒㄧㄠˇ", "大": "ㄉㄚˋ", "中": "ㄓㄨㄥ", "天": "ㄊㄧㄢ", "今": "ㄐㄧㄣ",
+      "早": "ㄗㄠˇ", "晚": "ㄨㄢˇ", "飯": "ㄈㄢˋ", "後": "ㄏㄡˋ", "我": "ㄨㄛˇ",
+      "和": "ㄏㄜˊ", "媽": "ㄇㄚ", "爸": "ㄅㄚˋ", "去": "ㄑㄩˋ", "公": "ㄍㄨㄥ",
+      "園": "ㄩㄢˊ", "樹": "ㄕㄨˋ", "有": "ㄧㄡˇ", "綠": "ㄌㄩˋ", "葉": "ㄧㄝˋ",
+      "地": "ㄉㄧˋ", "花": "ㄏㄨㄚ", "看": "ㄎㄢˋ", "也": "ㄧㄝˇ", "慢": "ㄇㄢˋ",
+      "說": "ㄕㄨㄛ", "出": "ㄔㄨ", "到": "ㄉㄠˋ", "的": "ㄉㄜ˙", "東": "ㄉㄨㄥ",
+      "西": "ㄒㄧ", "起": "ㄑㄧˇ", "雨": "ㄩˇ", "幫": "ㄅㄤ", "拿": "ㄋㄚˊ",
+      "衣": "ㄧ", "自": "ㄗˋ", "己": "ㄐㄧˇ", "背": "ㄅㄟ", "好": "ㄏㄠˇ",
+      "書": "ㄕㄨ", "包": "ㄅㄠ", "學": "ㄒㄩㄝˊ", "校": "ㄒㄧㄠˋ", "時": "ㄕˊ",
+      "跟": "ㄍㄣ", "謝": "ㄒㄧㄝˋ", "課": "ㄎㄜˋ", "走": "ㄗㄡˇ", "圖": "ㄊㄨˊ",
+      "角": "ㄐㄧㄠˇ", "桌": "ㄓㄨㄛ", "本": "ㄅㄣˇ", "故": "ㄍㄨˋ", "事": "ㄕˋ",
+      "安": "ㄢ", "靜": "ㄐㄧㄥˋ", "笑": "ㄒㄧㄠˋ", "方": "ㄈㄤ", "聲": "ㄕㄥ",
+      "坐": "ㄗㄨㄛˋ", "在": "ㄗㄞˋ", "前": "ㄑㄧㄢˊ", "鉛": "ㄑㄧㄢ", "筆": "ㄅㄧˇ",
+      "橡": "ㄒㄧㄤˋ", "皮": "ㄆㄧˊ", "都": "ㄉㄡ", "放": "ㄈㄤˋ", "了": "ㄌㄜ˙",
+      "先": "ㄒㄧㄢ", "寫": "ㄒㄧㄝˇ", "行": "ㄏㄤˊ", "注": "ㄓㄨˋ", "音": "ㄧㄣ",
+      "再": "ㄗㄞˋ", "休": "ㄒㄧㄡ", "息": "ㄒㄧˊ", "美": "ㄇㄟˇ", "勞": "ㄌㄠˊ",
+      "同": "ㄊㄨㄥˊ", "色": "ㄙㄜˋ", "紙": "ㄓˇ", "少": "ㄕㄠˇ", "分": "ㄈㄣ",
+      "給": "ㄍㄟˇ", "他": "ㄊㄚ", "張": "ㄓㄤ", "著": "ㄓㄜ˙", "很": "ㄏㄣˇ",
+      "開": "ㄎㄞ", "心": "ㄒㄧㄣ", "窗": "ㄔㄨㄤ", "邊": "ㄅㄧㄢ", "盆": "ㄆㄣˊ",
+      "芽": "ㄧㄚˊ", "輕": "ㄑㄧㄥ", "澆": "ㄐㄧㄠ", "水": "ㄕㄨㄟˇ", "泥": "ㄋㄧˊ",
+      "土": "ㄊㄨˇ", "還": "ㄏㄞˊ", "會": "ㄏㄨㄟˋ", "每": "ㄇㄟˇ", "它": "ㄊㄚ",
+      "讀": "ㄉㄨˊ", "抄": "ㄔㄠ", "練": "ㄌㄧㄢˋ", "習": "ㄒㄧˊ", "畫": "ㄏㄨㄚˋ",
+      "問": "ㄨㄣˋ", "題": "ㄊㄧˊ", "孩": "ㄏㄞˊ", "子": "ㄗˇ", "什": "ㄕㄣˊ",
+      "麼": "ㄇㄜ˙", "誰": "ㄕㄟˊ", "做": "ㄗㄨㄛˋ", "文": "ㄨㄣˊ", "具": "ㄐㄩˋ",
+      "用": "ㄩㄥˋ", "顏": "ㄧㄢˊ", "顧": "ㄍㄨˋ", "路": "ㄌㄨˋ", "片": "ㄆㄧㄢˋ"
+    };
+
+    const state = {
+      active: sheets[0],
+      ruby: { ...baseRuby }
+    };
+
+    const themeSelect = document.getElementById("themeSelect");
+    const studentName = document.getElementById("studentName");
+    const sheetDate = document.getElementById("sheetDate");
+    const customTitle = document.getElementById("customTitle");
+    const storyText = document.getElementById("storyText");
+    const practiceText = document.getElementById("practiceText");
+    const questionText = document.getElementById("questionText");
+    const drawText = document.getElementById("drawText");
+    const rubyText = document.getElementById("rubyText");
+
+    function todayString() {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, "0");
+      const dd = String(today.getDate()).padStart(2, "0");
+      return `${yyyy}-${mm}-${dd}`;
+    }
+
+    function fillThemeOptions() {
+      themeSelect.innerHTML = "";
+      sheets.forEach((sheet) => {
+        const option = document.createElement("option");
+        option.value = sheet.key;
+        option.textContent = `${sheet.label}｜${sheet.topic}`;
+        themeSelect.appendChild(option);
+      });
+    }
+
+    function loadSheet(sheet) {
+      state.active = sheet;
+      themeSelect.value = sheet.key;
+      storyText.value = sheet.story;
+      practiceText.value = sheet.practice;
+      questionText.value = sheet.question;
+      drawText.value = sheet.drawing;
+      render();
+    }
+
+    function parseRubyInput() {
+      const next = { ...baseRuby };
+      rubyText.value.split(/\n+/).forEach((line) => {
+        const trimmed = line.trim();
+        if (!trimmed) return;
+        const parts = trimmed.split(/[=：:,\s]+/).filter(Boolean);
+        if (parts.length >= 2) {
+          next[parts[0]] = parts[1];
+        }
+      });
+      state.ruby = next;
+    }
+
+    function escapeHTML(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function renderZhuyinMark(zhuyin) {
+      const toneMarks = new Set(["ˊ", "ˇ", "ˋ", "˙"]);
+      const marks = Array.from(String(zhuyin || ""));
+      const tone = marks.filter((ch) => toneMarks.has(ch)).join("");
+      const symbols = marks.filter((ch) => !toneMarks.has(ch));
+      const stack = symbols.map((ch) => `<span>${escapeHTML(ch)}</span>`).join("");
+      const toneHTML = tone ? `<span class="bpmf-tone">${escapeHTML(tone)}</span>` : "";
+      return `<span class="bpmf-wrap"><span class="bpmf-stack">${stack}</span>${toneHTML}</span>`;
+    }
+
+    function renderRuby(text) {
+      return Array.from(text).map((ch) => {
+        if (ch === "\n") return "<br>";
+        const zhuyin = state.ruby[ch];
+        if (zhuyin) {
+          return `<span class="phonetic-char"><span class="han">${escapeHTML(ch)}</span>${renderZhuyinMark(zhuyin)}</span>`;
+        }
+        return escapeHTML(ch);
+      }).join("");
+    }
+
+    function dateForPrint(value) {
+      if (!value) return "";
+      const [y, m, d] = value.split("-");
+      return `${Number(m)}月${Number(d)}日`;
+    }
+
+    function renderPractice() {
+      const chars = Array.from(practiceText.value.replace(/[，、,\s]/g, "")).slice(0, 8);
+      const grid = document.getElementById("practiceGrid");
+      grid.innerHTML = "";
+      chars.forEach((ch) => {
+        const item = document.createElement("div");
+        item.className = "practice-cell";
+        item.innerHTML = `
+          <div class="model">${renderRuby(ch)}</div>
+          <div class="trace"><span></span><span></span><span></span></div>
+        `;
+        grid.appendChild(item);
+      });
+    }
+
+    function renderZhuyinStrip() {
+      const chars = Array.from(practiceText.value.replace(/[，、,\s]/g, "")).slice(0, 6);
+      const strip = document.getElementById("zhuyinStrip");
+      strip.innerHTML = "";
+      chars.forEach((ch) => {
+        const box = document.createElement("div");
+        box.className = "zhuyin-box";
+        box.innerHTML = renderZhuyinMark(state.ruby[ch] || "");
+        strip.appendChild(box);
+      });
+    }
+
+    function render() {
+      parseRubyInput();
+      document.getElementById("sheetTitle").textContent = customTitle.value || "一年級國語注音學習單";
+      document.getElementById("sheetSubtitle").textContent = state.active.subtitle;
+      document.getElementById("nameLine").textContent = studentName.value;
+      document.getElementById("dateLine").textContent = dateForPrint(sheetDate.value);
+      document.getElementById("storyBox").innerHTML = renderRuby(storyText.value);
+      document.getElementById("questionBox").innerHTML = renderRuby(questionText.value);
+      document.getElementById("drawLabel").textContent = drawText.value;
+      document.getElementById("taskText").textContent = state.active.task;
+      renderPractice();
+      renderZhuyinStrip();
+    }
+
+    function randomSheet() {
+      const selected = sheets[Math.floor(Math.random() * sheets.length)];
+      loadSheet(selected);
+    }
+
+    function openGoogle(kind) {
+      const q = kind === "image"
+        ? `${state.active.label} 小學一年級 圖畫 參考`
+        : `${state.active.label} 小學一年級 注音`;
+      const url = kind === "image"
+        ? `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(q)}`
+        : `https://www.google.com/search?q=${encodeURIComponent(q)}`;
+      window.open(url, "_blank", "noopener,noreferrer");
+    }
+
+    function saveCurrent() {
+      const payload = {
+        theme: state.active.key,
+        name: studentName.value,
+        date: sheetDate.value,
+        title: customTitle.value,
+        story: storyText.value,
+        practice: practiceText.value,
+        question: questionText.value,
+        drawing: drawText.value,
+        ruby: rubyText.value
+      };
+      localStorage.setItem("first-grade-zhuyin-worksheet", JSON.stringify(payload));
+    }
+
+    function restoreSaved() {
+      const raw = localStorage.getItem("first-grade-zhuyin-worksheet");
+      if (!raw) return false;
+      try {
+        const payload = JSON.parse(raw);
+        const sheet = sheets.find((item) => item.key === payload.theme) || sheets[0];
+        state.active = sheet;
+        themeSelect.value = sheet.key;
+        studentName.value = payload.name || "";
+        sheetDate.value = payload.date || todayString();
+        customTitle.value = payload.title || "一年級國語注音學習單";
+        storyText.value = payload.story || sheet.story;
+        practiceText.value = payload.practice || sheet.practice;
+        questionText.value = payload.question || sheet.question;
+        drawText.value = payload.drawing || sheet.drawing;
+        rubyText.value = payload.ruby || "";
+        render();
+        return true;
+      } catch (error) {
+        return false;
+      }
+    }
+
+    fillThemeOptions();
+    sheetDate.value = todayString();
+    rubyText.value = "";
+    if (!restoreSaved()) {
+      loadSheet(sheets[0]);
+    }
+
+    themeSelect.addEventListener("change", () => {
+      const sheet = sheets.find((item) => item.key === themeSelect.value) || sheets[0];
+      loadSheet(sheet);
+    });
+
+    document.getElementById("randomBtn").addEventListener("click", randomSheet);
+    document.getElementById("printBtn").addEventListener("click", () => window.print());
+    document.getElementById("applyBtn").addEventListener("click", render);
+    document.getElementById("googleTextBtn").addEventListener("click", () => openGoogle("text"));
+    document.getElementById("googleImageBtn").addEventListener("click", () => openGoogle("image"));
+    document.getElementById("saveBtn").addEventListener("click", () => {
+      saveCurrent();
+      render();
+    });
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      localStorage.removeItem("first-grade-zhuyin-worksheet");
+      studentName.value = "";
+      sheetDate.value = todayString();
+      customTitle.value = "一年級國語注音學習單";
+      rubyText.value = "";
+      loadSheet(sheets[0]);
+    });
+
+    [studentName, sheetDate, customTitle, storyText, practiceText, questionText, drawText, rubyText]
+      .forEach((el) => el.addEventListener("input", render));
+  </script>
+</body>
+</html>
