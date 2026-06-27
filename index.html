@@ -308,14 +308,14 @@
 
     .practice-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
     }
 
     .practice-cell {
-      min-height: 88px;
+      min-height: 122px;
       display: grid;
-      grid-template-columns: 56px 1fr;
+      grid-template-columns: 82px 1fr;
       border: 1.4px solid var(--grid);
       background: #fff;
     }
@@ -328,6 +328,7 @@
       font-size: 18pt;
       font-weight: 700;
       line-height: 1;
+      padding: 6px;
     }
 
     .practice-cell .model .phonetic-char {
@@ -344,7 +345,7 @@
 
     .practice-cell .trace {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       min-width: 0;
     }
 
@@ -402,35 +403,6 @@
     .answer-line {
       height: 32px;
       border-bottom: 1.4px solid #8a94a3;
-    }
-
-    .zhuyin-strip {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 6px;
-      margin-top: 8px;
-    }
-
-    .zhuyin-box {
-      min-height: 46px;
-      border: 1.4px solid var(--grid);
-      background: #fff;
-      display: grid;
-      place-items: center;
-      font-size: 15pt;
-      color: #334155;
-    }
-
-    .zhuyin-box .bpmf-wrap {
-      transform: none;
-    }
-
-    .zhuyin-box .bpmf-stack {
-      font-size: 1em;
-    }
-
-    .zhuyin-box .bpmf-tone {
-      font-size: .86em;
     }
 
     .footer-note {
@@ -542,12 +514,13 @@
       }
 
       .practice-cell {
-        min-height: 76px;
+        min-height: 98px;
+        grid-template-columns: 72px 1fr;
       }
 
       .draw-box,
       .answer-box {
-        min-height: 158px;
+        min-height: 178px;
       }
 
       .prompt {
@@ -557,15 +530,6 @@
 
       .answer-line {
         height: 24px;
-      }
-
-      .zhuyin-strip {
-        gap: 4px;
-        margin-top: 5px;
-      }
-
-      .zhuyin-box {
-        min-height: 36px;
       }
 
       .footer-note {
@@ -685,8 +649,6 @@
               <div class="answer-line"></div>
               <div class="answer-line"></div>
               <div class="answer-line"></div>
-              <p class="prompt" style="margin-top:12px;">我會寫注音：</p>
-              <div class="zhuyin-strip" id="zhuyinStrip"></div>
             </div>
           </div>
         </section>
@@ -710,106 +672,557 @@
   </main>
 
   <script>
-    const sheets = [
-      {
-        key: "park",
-        label: "公園散步",
-        topic: "觀察",
-        subtitle: "主題：公園散步",
-        story: "今天早上，我和媽媽去公園。樹上有綠葉，地上有小花。我看一看，也慢慢說出看到的東西。",
-        practice: "公園媽媽樹葉小花看說",
-        question: "故事裡，孩子在公園看到什麼？",
-        drawing: "畫出公園裡的一樣東西",
-        task: "和家人說出今天看到的一種顏色。"
-      },
-      {
-        key: "rain",
-        label: "雨天上學",
-        topic: "照顧",
-        subtitle: "主題：雨天上學",
-        story: "早上，下起小雨。爸爸幫我拿雨衣，我自己背好書包。到學校時，我跟爸爸說謝謝。",
-        practice: "早雨爸爸我書包學校謝",
-        question: "故事裡，誰幫孩子拿雨衣？",
-        drawing: "畫出一件雨天會用到的東西",
-        task: "回家後，把雨具放在固定的位置。"
-      },
-      {
-        key: "library",
-        label: "圖書角",
-        topic: "閱讀",
-        subtitle: "主題：圖書角",
-        story: "下課時，我走到圖書角。桌上有一本故事書，我安靜地看。看到好笑的地方，我小聲笑了。",
-        practice: "下課圖書故事安靜看笑",
-        question: "孩子在圖書角做了什麼？",
-        drawing: "畫出一本你想看的書",
-        task: "今天選一本書，翻開看三頁。"
-      },
-      {
-        key: "homework",
-        label: "完成作業",
-        topic: "專心",
-        subtitle: "主題：完成作業",
-        story: "晚飯後，我坐在書桌前。鉛筆和橡皮都放好了。我先寫一行注音，再休息一下。",
-        practice: "晚飯書桌鉛筆橡皮寫行",
-        question: "孩子先寫了什麼？",
-        drawing: "畫出你寫作業時會用的文具",
-        task: "完成一小段功課後，把文具收好。"
-      },
-      {
-        key: "friend",
-        label: "和同學分享",
-        topic: "分享",
-        subtitle: "主題：和同學分享",
-        story: "美勞課時，我有兩張色紙。同學少了一張，我分給他一張。他笑著說謝謝，我也很開心。",
-        practice: "美勞同學色紙分給開心",
-        question: "孩子把什麼分給同學？",
-        drawing: "畫出你願意分享的一樣東西",
-        task: "今天對一位同學或家人說一句好話。"
-      },
-      {
-        key: "plant",
-        label: "照顧小芽",
-        topic: "耐心",
-        subtitle: "主題：照顧小芽",
-        story: "窗邊有一盆小芽。我輕輕澆水，也看看泥土。小芽還很小，我會每天來看它。",
-        practice: "窗邊小芽輕水泥土每天",
-        question: "孩子每天想看什麼？",
-        drawing: "畫出一棵正在長大的植物",
-        task: "觀察家裡或路邊的一片葉子。"
-      },
-      {
-        key: "sel_responsibility",
-        label: "整理座位",
-        topic: "負責",
-        subtitle: "SEL主題：負責",
-        story: "下課前，我把鉛筆放進筆盒。椅子靠好，桌上也收乾淨。我做好自己的小事，心裡很踏實。",
-        practice: "負責整理座位鉛筆桌椅",
-        question: "故事裡，孩子做了哪一件負責的事？",
-        drawing: "畫出你會自己整理的一樣東西",
-        task: "今天自己收好一樣物品。"
-      },
-      {
-        key: "sel_emotion",
-        label: "我會說心情",
-        topic: "情緒",
-        subtitle: "SEL主題：情緒",
-        story: "我今天有一點生氣，因為積木倒了。我先停一下，慢慢吸一口氣。後來，我告訴老師我的心情。",
-        practice: "情緒生氣停吸老師告訴",
-        question: "孩子生氣時，先做了什麼？",
-        drawing: "畫出你今天的一種心情",
-        task: "用一句話告訴家人今天的心情。"
-      },
-      {
-        key: "sel_empathy",
-        label: "我會關心同學",
-        topic: "同理",
-        subtitle: "SEL主題：同理",
-        story: "同學跌倒了，坐在地上哭。我走過去，問他痛不痛。老師來以前，我陪他等一下。",
-        practice: "同理關心跌倒哭痛陪等",
-        question: "故事裡，孩子怎麼關心同學？",
-        drawing: "畫出你幫助別人的樣子",
-        task: "今天注意一位需要幫忙的人。"
-      }
+    const sheets =     [
+          {
+                key: "park",
+                label: "公園散步",
+                topic: "觀察",
+                subtitle: "主題：公園散步",
+                story: "今天早上，我和媽媽去公園。樹上有綠葉，地上有小花。我看一看，也慢慢說出看到的東西。",
+                practice: "公園、樹葉、小花",
+                question: "故事裡，孩子在公園看到什麼？",
+                drawing: "畫出公園裡的一樣東西",
+                task: "和家人說出今天看到的一種顏色。"
+          },
+          {
+                key: "rain",
+                label: "雨天上學",
+                topic: "照顧",
+                subtitle: "主題：雨天上學",
+                story: "早上，下起小雨。爸爸幫我拿雨衣，我自己背好書包。到學校時，我跟爸爸說謝謝。",
+                practice: "小雨、雨衣、書包",
+                question: "故事裡，誰幫孩子拿雨衣？",
+                drawing: "畫出一件雨天會用到的東西",
+                task: "回家後，把雨具放在固定的位置。"
+          },
+          {
+                key: "library",
+                label: "圖書角",
+                topic: "閱讀",
+                subtitle: "主題：圖書角",
+                story: "下課時，我走到圖書角。桌上有一本故事書，我安靜地看。看到好笑的地方，我小聲笑了。",
+                practice: "圖書、故事、安靜",
+                question: "孩子在圖書角做了什麼？",
+                drawing: "畫出一本你想看的書",
+                task: "今天選一本書，翻開看三頁。"
+          },
+          {
+                key: "homework",
+                label: "完成作業",
+                topic: "專心",
+                subtitle: "主題：完成作業",
+                story: "晚飯後，我坐在書桌前。鉛筆和橡皮都放好了。我先寫一行字，再休息一下。",
+                practice: "書桌、鉛筆、橡皮",
+                question: "孩子先寫了什麼？",
+                drawing: "畫出你寫作業時會用的文具",
+                task: "完成一小段功課後，把文具收好。"
+          },
+          {
+                key: "friend",
+                label: "和同學分享",
+                topic: "分享",
+                subtitle: "主題：和同學分享",
+                story: "美勞課時，我有兩張色紙。同學少了一張，我分給他一張。他笑著說謝謝，我也很開心。",
+                practice: "同學、色紙、開心",
+                question: "孩子把什麼分給同學？",
+                drawing: "畫出你願意分享的一樣東西",
+                task: "今天對一位同學或家人說一句好話。"
+          },
+          {
+                key: "plant",
+                label: "照顧小芽",
+                topic: "耐心",
+                subtitle: "主題：照顧小芽",
+                story: "窗邊有一盆小芽。我輕輕澆水，也看看泥土。小芽還很小，我會每天來看它。",
+                practice: "小芽、澆水、泥土",
+                question: "孩子每天想看什麼？",
+                drawing: "畫出一棵正在長大的植物",
+                task: "觀察家裡或路邊的一片葉子。"
+          },
+          {
+                key: "sel_responsibility",
+                label: "整理座位",
+                topic: "負責",
+                subtitle: "SEL主題：負責",
+                story: "下課前，我把鉛筆放進筆盒。椅子靠好，桌上也收乾淨。我做好自己的小事，心裡很踏實。",
+                practice: "負責、座位、筆盒",
+                question: "孩子做了哪一件負責的事？",
+                drawing: "畫出你會自己整理的一樣東西",
+                task: "今天自己收好一樣物品。"
+          },
+          {
+                key: "sel_emotion",
+                label: "我會說心情",
+                topic: "情緒",
+                subtitle: "SEL主題：情緒",
+                story: "我今天有一點生氣，因為積木倒了。我先停一下，慢慢吸一口氣。後來，我告訴老師我的心情。",
+                practice: "情緒、生氣、心情",
+                question: "孩子生氣時，先做了什麼？",
+                drawing: "畫出你今天的一種心情",
+                task: "用一句話告訴家人今天的心情。"
+          },
+          {
+                key: "sel_empathy",
+                label: "我會關心同學",
+                topic: "同理",
+                subtitle: "SEL主題：同理",
+                story: "同學跌倒了，坐在地上哭。我走過去，問他痛不痛。老師來以前，我陪他等一下。",
+                practice: "同理、關心、陪伴",
+                question: "孩子怎麼關心同學？",
+                drawing: "畫出你幫助別人的樣子",
+                task: "今天注意一位需要幫忙的人。"
+          },
+          {
+                key: "line_up",
+                label: "排隊等一等",
+                topic: "等待",
+                subtitle: "SEL主題：等待",
+                story: "下課後，大家排隊去洗手。我站在後面，沒有推人。輪到我時，我慢慢把手洗乾淨。",
+                practice: "排隊、洗手、輪到",
+                question: "孩子排隊時沒有做什麼？",
+                drawing: "畫出排隊洗手的樣子",
+                task: "今天排隊時，練習等一等。"
+          },
+          {
+                key: "toy_box",
+                label: "收玩具",
+                topic: "負責",
+                subtitle: "SEL主題：負責",
+                story: "遊戲時間結束了，我看到地上有積木。我把積木放回盒子。教室變乾淨，我心裡很舒服。",
+                practice: "玩具、積木、盒子",
+                question: "孩子把積木放到哪裡？",
+                drawing: "畫出整理好的玩具",
+                task: "玩完一樣東西後，把它放回去。"
+          },
+          {
+                key: "borrow_eraser",
+                label: "借橡皮",
+                topic: "禮貌",
+                subtitle: "SEL主題：禮貌",
+                story: "我寫字時，發現橡皮不見了。我小聲問同學，可不可以借一下。用完後，我說謝謝，也把橡皮還回去。",
+                practice: "橡皮、借用、謝謝",
+                question: "孩子用完橡皮後說了什麼？",
+                drawing: "畫出你會有禮貌借東西的樣子",
+                task: "今天借東西時，說請和謝謝。"
+          },
+          {
+                key: "morning_hello",
+                label: "早安問好",
+                topic: "禮貌",
+                subtitle: "SEL主題：禮貌",
+                story: "早上進教室，我看到老師。我停下腳步，笑著說早安。老師也笑了，我覺得很溫暖。",
+                practice: "早安、老師、溫暖",
+                question: "孩子看到老師時說了什麼？",
+                drawing: "畫出你和老師問好的樣子",
+                task: "今天主動和一個人問好。"
+          },
+          {
+                key: "lunch",
+                label: "午餐時間",
+                topic: "感謝",
+                subtitle: "SEL主題：感謝",
+                story: "午餐到了，阿姨幫大家盛飯。我雙手接過餐盤，輕輕說謝謝。吃飯時，我慢慢吃，也不浪費。",
+                practice: "午餐、餐盤、感謝",
+                question: "孩子接過餐盤時說了什麼？",
+                drawing: "畫出你喜歡的一樣午餐",
+                task: "吃飯前，向幫忙的人說謝謝。"
+          },
+          {
+                key: "nervous_stage",
+                label: "上台有點緊張",
+                topic: "緊張",
+                subtitle: "SEL主題：情緒辨識",
+                story: "國語課時，老師請我上台說話。我的手有一點抖，心也跳得快。我知道自己有點緊張，就先吸一口氣。",
+                practice: "上台、緊張、吸氣",
+                question: "孩子怎麼知道自己有點緊張？",
+                drawing: "畫出你緊張時的樣子",
+                task: "緊張時，先慢慢吸一口氣。"
+          },
+          {
+                key: "shy_new_seat",
+                label: "換座位有點害羞",
+                topic: "害羞",
+                subtitle: "SEL主題：情緒辨識",
+                story: "今天老師幫大家換座位。我旁邊坐了新的同學，我有一點害羞。我先小聲說你好，心裡就比較放鬆。",
+                practice: "座位、害羞、你好",
+                question: "孩子害羞時，先小聲說了什麼？",
+                drawing: "畫出你害羞時的表情",
+                task: "害羞時，可以先說一句短短的話。"
+          },
+          {
+                key: "sad_paper",
+                label: "作品破了很難過",
+                topic: "難過",
+                subtitle: "SEL主題：情緒辨識",
+                story: "我的圖畫紙不小心破了一角。我低著頭，不太想說話。老師說我看起來很難過，陪我一起修一修。",
+                practice: "難過、圖畫、修好",
+                question: "老師怎麼知道孩子難過？",
+                drawing: "畫出難過時的表情",
+                task: "難過時，可以告訴大人發生什麼事。"
+          },
+          {
+                key: "clean_table",
+                label: "擦桌子",
+                topic: "幫忙",
+                subtitle: "SEL主題：幫忙",
+                story: "點心後，桌上有一點餅乾屑。我拿抹布輕輕擦桌子。同學看到了，也一起幫忙。",
+                practice: "桌子、抹布、幫忙",
+                question: "孩子用什麼擦桌子？",
+                drawing: "畫出你幫忙整理的樣子",
+                task: "今天幫忙擦一個小地方。"
+          },
+          {
+                key: "take_turns",
+                label: "輪流玩球",
+                topic: "輪流",
+                subtitle: "SEL主題：輪流",
+                story: "操場上，大家想玩球。我先等同學丟完，再伸手接球。輪流玩，大家都玩得到。",
+                practice: "玩球、輪流、接球",
+                question: "孩子為什麼要等一等？",
+                drawing: "畫出大家輪流玩球",
+                task: "今天玩玩具時，練習輪流。"
+          },
+          {
+                key: "speak_up",
+                label: "勇敢開口",
+                topic: "勇敢",
+                subtitle: "SEL主題：勇敢",
+                story: "我看不懂題目，心裡有點急。我舉手問老師，可不可以再說一次。老師慢慢說，我就比較懂了。",
+                practice: "勇敢、舉手、題目",
+                question: "孩子不懂時做了什麼？",
+                drawing: "畫出你舉手問問題",
+                task: "遇到不懂的事，練習開口問。"
+          },
+          {
+                key: "wait",
+                label: "等一下",
+                topic: "等待",
+                subtitle: "SEL主題：等待",
+                story: "我想和媽媽說話，可是媽媽正在講電話。我先坐在旁邊等一下。媽媽講完後，就看著我聽我說。",
+                practice: "媽媽、電話、等待",
+                question: "媽媽講電話時，孩子怎麼做？",
+                drawing: "畫出等待的樣子",
+                task: "今天練習等一件小事。"
+          },
+          {
+                key: "sorry",
+                label: "我會道歉",
+                topic: "修復",
+                subtitle: "SEL主題：修復",
+                story: "我跑太快，不小心撞到同學。同學皺著眉頭，我停下來。說對不起後，我陪他去找老師。",
+                practice: "道歉、同學、老師",
+                question: "孩子撞到同學後說了什麼？",
+                drawing: "畫出你說對不起的樣子",
+                task: "做錯事時，練習說對不起。"
+          },
+          {
+                key: "listen",
+                label: "聽同學說",
+                topic: "聆聽",
+                subtitle: "SEL主題：聆聽",
+                story: "同學正在說他的圖畫。我沒有插嘴，也看著他。聽完以後，我說我很喜歡那棵樹。",
+                practice: "聆聽、圖畫、喜歡",
+                question: "孩子聽同學說話時沒有做什麼？",
+                drawing: "畫出你聽人說話的樣子",
+                task: "今天聽一個人把話說完。"
+          },
+          {
+                key: "breath",
+                label: "安靜呼吸",
+                topic: "情緒",
+                subtitle: "SEL主題：情緒",
+                story: "我排隊等很久，心裡有點煩。我把手放在肚子上，慢慢吸氣。再慢慢吐氣後，我覺得好一點。",
+                practice: "呼吸、肚子、吐氣",
+                question: "孩子把手放在哪裡？",
+                drawing: "畫出慢慢呼吸的樣子",
+                task: "今天練習慢慢吸氣三次。"
+          },
+          {
+                key: "try_again",
+                label: "再試一次",
+                topic: "挫折",
+                subtitle: "SEL主題：挫折",
+                story: "我摺紙時，角沒有對齊。我有一點想放棄。老師說可以再試一次，我就慢慢重摺。",
+                practice: "摺紙、放棄、再試",
+                question: "孩子後來做了什麼？",
+                drawing: "畫出你再試一次的樣子",
+                task: "今天遇到難事時，先再試一次。"
+          },
+          {
+                key: "dark",
+                label: "我有點怕",
+                topic: "情緒",
+                subtitle: "SEL主題：情緒",
+                story: "晚上房間變暗，我有一點怕。我抱著小枕頭，叫爸爸陪我看一下。燈亮了，我知道房間很安全。",
+                practice: "晚上、房間、安全",
+                question: "孩子害怕時請誰陪他？",
+                drawing: "畫出讓你安心的一樣東西",
+                task: "害怕時，告訴大人你的感覺。"
+          },
+          {
+                key: "miss_home",
+                label: "想家",
+                topic: "情緒",
+                subtitle: "SEL主題：情緒",
+                story: "早上到學校，我有一點想家。老師牽著我的手，帶我看教室的花。過了一會兒，我開始想玩積木。",
+                practice: "想家、牽手、教室",
+                question: "老師帶孩子看什麼？",
+                drawing: "畫出讓你安心的地方",
+                task: "想家時，試著說出你的感覺。"
+          },
+          {
+                key: "like_me",
+                label: "喜歡自己",
+                topic: "自我",
+                subtitle: "SEL主題：自我",
+                story: "我今天自己穿好鞋子。鞋帶有一點歪，可是我有努力。媽媽說，慢慢學就會更好。",
+                practice: "自己、鞋子、努力",
+                question: "孩子今天自己做了什麼？",
+                drawing: "畫出你會自己做的一件事",
+                task: "今天說出自己做得好的一件事。"
+          },
+          {
+                key: "book_care",
+                label: "照顧書本",
+                topic: "負責",
+                subtitle: "SEL主題：負責",
+                story: "我翻書時，看到書角皺皺的。我用手慢慢壓平，再把書放好。書本被照顧好，下次還能看。",
+                practice: "書本、書角、照顧",
+                question: "孩子看到書角皺皺的，做了什麼？",
+                drawing: "畫出一本被照顧好的書",
+                task: "今天輕輕翻書，不折書角。"
+          },
+          {
+                key: "helper",
+                label: "小小值日生",
+                topic: "負責",
+                subtitle: "SEL主題：負責",
+                story: "今天輪到我當值日生。我把粉筆盒放好，也提醒同學排椅子。教室整齊了，我覺得很有力氣。",
+                practice: "值日、粉筆、整齊",
+                question: "孩子今天當什麼？",
+                drawing: "畫出值日生幫忙的樣子",
+                task: "今天完成一件班級小工作。"
+          },
+          {
+                key: "blocks",
+                label: "搭積木",
+                topic: "合作",
+                subtitle: "SEL主題：合作",
+                story: "我和同學一起搭高塔。我拿紅色積木，他拿藍色積木。高塔倒了，我們笑一笑，再一起搭。",
+                practice: "積木、高塔、合作",
+                question: "高塔倒了以後，孩子們怎麼做？",
+                drawing: "畫出你想搭的高塔",
+                task: "今天和一個人一起完成小事。"
+          },
+          {
+                key: "sibling",
+                label: "照顧妹妹",
+                topic: "同理",
+                subtitle: "SEL主題：同理",
+                story: "妹妹跌倒了，眼淚一直掉。我拿衛生紙給她，也坐在旁邊陪她。她不哭了，我也放心了。",
+                practice: "妹妹、眼淚、放心",
+                question: "孩子拿什麼給妹妹？",
+                drawing: "畫出你照顧家人的樣子",
+                task: "今天關心家人的一個感覺。"
+          },
+          {
+                key: "cross_road",
+                label: "過馬路",
+                topic: "安全",
+                subtitle: "主題：安全",
+                story: "放學後，我和爸爸走到路口。紅燈亮時，我們停下來。綠燈亮了，我牽著爸爸慢慢走。",
+                practice: "馬路、紅燈、綠燈",
+                question: "紅燈亮時，孩子怎麼做？",
+                drawing: "畫出安全過馬路",
+                task: "過馬路時，先看燈號。"
+          },
+          {
+                key: "school_bag",
+                label: "整理書包",
+                topic: "自理",
+                subtitle: "SEL主題：自理",
+                story: "睡覺前，我打開書包。我把聯絡簿放進去，也放好水壺。明天早上，我就不會急急忙忙。",
+                practice: "書包、水壺、明天",
+                question: "孩子把什麼放進書包？",
+                drawing: "畫出整理好的書包",
+                task: "睡前看一次明天要帶的東西。"
+          },
+          {
+                key: "drink_water",
+                label: "喝水休息",
+                topic: "照顧自己",
+                subtitle: "SEL主題：自我照顧",
+                story: "跑步後，我的臉熱熱的。老師提醒我先喝水，再坐下休息。喝完水後，我覺得身體舒服多了。",
+                practice: "喝水、休息、身體",
+                question: "跑步後，老師提醒孩子先做什麼？",
+                drawing: "畫出你喝水休息的樣子",
+                task: "今天記得喝水。"
+          },
+          {
+                key: "disappointed_sticker",
+                label: "沒有拿到貼紙",
+                topic: "失望",
+                subtitle: "SEL主題：情緒辨識",
+                story: "今天老師發貼紙，我沒有拿到。我嘴巴扁扁的，心裡有點失望。老師提醒我，下次還可以再努力。",
+                practice: "貼紙、失望、努力",
+                question: "孩子沒有拿到貼紙時，心裡覺得怎樣？",
+                drawing: "畫出失望時的表情",
+                task: "失望時，說出自己的感覺。"
+          },
+          {
+                key: "new_student",
+                label: "新同學",
+                topic: "同理",
+                subtitle: "SEL主題：同理",
+                story: "班上來了一位新同學。他站在門口，有一點害羞。我走過去，帶他看自己的座位。",
+                practice: "新同學、害羞、座位",
+                question: "孩子怎麼幫新同學？",
+                drawing: "畫出你歡迎新同學",
+                task: "今天對一個人露出微笑。"
+          },
+          {
+                key: "lost_crayon",
+                label: "找蠟筆",
+                topic: "解決問題",
+                subtitle: "SEL主題：解決問題",
+                story: "我的黃色蠟筆不見了。我先看桌子下面，再看筆盒裡。最後，我在畫紙旁邊找到它。",
+                practice: "蠟筆、黃色、找到",
+                question: "孩子最後在哪裡找到蠟筆？",
+                drawing: "畫出一支蠟筆",
+                task: "找不到東西時，先慢慢找三個地方。"
+          },
+          {
+                key: "quiet_corner",
+                label: "安靜角",
+                topic: "情緒",
+                subtitle: "SEL主題：情緒",
+                story: "我覺得心裡亂亂的。老師讓我到安靜角坐一下。我抱著小抱枕，慢慢安靜下來。",
+                practice: "安靜、抱枕、心裡",
+                question: "孩子到哪裡坐一下？",
+                drawing: "畫出讓你安靜的角落",
+                task: "心裡亂亂時，找一個安靜地方。"
+          },
+          {
+                key: "help_grandma",
+                label: "幫阿嬤",
+                topic: "關心",
+                subtitle: "SEL主題：關心",
+                story: "阿嬤拿著菜籃，走得慢慢的。我幫她按電梯，也等她一起進去。阿嬤摸摸我的頭，說我長大了。",
+                practice: "阿嬤、電梯、關心",
+                question: "孩子幫阿嬤做了什麼？",
+                drawing: "畫出你幫家人的樣子",
+                task: "今天幫家人做一件小事。"
+          },
+          {
+                key: "market",
+                label: "市場買菜",
+                topic: "觀察",
+                subtitle: "主題：市場買菜",
+                story: "星期六，我和爸爸去市場。菜攤上有青菜、豆腐和蘋果。我幫爸爸數一數袋子。",
+                practice: "市場、青菜、蘋果",
+                question: "菜攤上有哪一樣東西？",
+                drawing: "畫出市場裡的一樣食物",
+                task: "今天說出一種你吃到的食物。"
+          },
+          {
+                key: "bus",
+                label: "搭公車",
+                topic: "規則",
+                subtitle: "SEL主題：規則",
+                story: "公車來了，我牽著媽媽上車。車上有人在休息，我小聲說話。下車前，我按鈴提醒司機。",
+                practice: "公車、小聲、按鈴",
+                question: "孩子在車上為什麼小聲說話？",
+                drawing: "畫出你搭公車的樣子",
+                task: "在公共地方，練習小聲說話。"
+          },
+          {
+                key: "surprise_card",
+                label: "收到小卡很驚喜",
+                topic: "驚喜",
+                subtitle: "SEL主題：情緒辨識",
+                story: "下課時，同學送我一張小卡。我睜大眼睛，嘴巴也笑開了。我知道這是驚喜，心裡暖暖的。",
+                practice: "小卡、驚喜、笑開",
+                question: "孩子收到小卡時，臉上有什麼樣子？",
+                drawing: "畫出驚喜時的表情",
+                task: "今天觀察一個人的表情。"
+          },
+          {
+                key: "lost_game",
+                label: "輸了也可以",
+                topic: "挫折",
+                subtitle: "SEL主題：挫折",
+                story: "玩遊戲時，我沒有贏。我心裡悶悶的，但沒有丟玩具。休息一下後，我和同學再玩一次。",
+                practice: "遊戲、休息、再玩",
+                question: "孩子輸了以後沒有做什麼？",
+                drawing: "畫出你休息一下的樣子",
+                task: "輸了時，練習深呼吸。"
+          },
+          {
+                key: "thank_card",
+                label: "謝謝卡",
+                topic: "感謝",
+                subtitle: "SEL主題：感謝",
+                story: "老師今天幫我找回水壺。我想做一張小卡片送給老師。卡片上畫了花，也寫了謝謝。",
+                practice: "卡片、老師、謝謝",
+                question: "孩子想把卡片送給誰？",
+                drawing: "畫出一張謝謝卡",
+                task: "今天向一個人說謝謝。"
+          },
+          {
+                key: "proud_shoes",
+                label: "自己穿鞋很得意",
+                topic: "得意",
+                subtitle: "SEL主題：情緒辨識",
+                story: "早上出門前，我自己把鞋穿好。爸爸看到了，對我比一個讚。我挺起胸口，覺得自己很得意。",
+                practice: "穿鞋、得意、讚美",
+                question: "孩子為什麼覺得得意？",
+                drawing: "畫出得意時的樣子",
+                task: "今天說出自己做得好的一件事。"
+          },
+          {
+                key: "sick_friend",
+                label: "同學請假",
+                topic: "關心",
+                subtitle: "SEL主題：關心",
+                story: "今天小安沒有來上學。老師說他感冒了，需要休息。我畫了一張圖，想等他回來送給他。",
+                practice: "請假、感冒、休息",
+                question: "小安為什麼沒有來上學？",
+                drawing: "畫出你想送給朋友的圖",
+                task: "今天關心一位沒有見到的人。"
+          },
+          {
+                key: "smile",
+                label: "一個微笑",
+                topic: "友善",
+                subtitle: "SEL主題：友善",
+                story: "我看到同學一個人坐著。他沒有說話，看起來有點孤單。我走過去，對他笑一笑。",
+                practice: "微笑、友善、孤單",
+                question: "孩子看到同學孤單時做了什麼？",
+                drawing: "畫出一個友善的笑臉",
+                task: "今天給一個人微笑。"
+          },
+          {
+                key: "noise",
+                label: "聲音太大",
+                topic: "覺察",
+                subtitle: "SEL主題：覺察",
+                story: "我和朋友玩得很開心，聲音越來越大。老師指一指耳朵，提醒我們。於是我把聲音放小一點。",
+                practice: "聲音、耳朵、提醒",
+                question: "老師怎麼提醒孩子？",
+                drawing: "畫出小聲說話的樣子",
+                task: "今天注意自己的音量。"
+          },
+          {
+                key: "lost_line",
+                label: "找不到隊伍",
+                topic: "解決問題",
+                subtitle: "SEL主題：解決問題",
+                story: "戶外教學時，我一時找不到隊伍。我停在原地，沒有亂跑。老師看到我，就帶我回到同學旁邊。",
+                practice: "隊伍、原地、老師",
+                question: "孩子找不到隊伍時，先怎麼做？",
+                drawing: "畫出安全等待老師",
+                task: "找不到人時，先停在安全地方。"
+          }
     ];
 
     const baseRuby = {
@@ -849,6 +1262,305 @@
       "關": "ㄍㄨㄢ", "跌": "ㄉㄧㄝˊ", "倒": "ㄉㄠˇ", "哭": "ㄎㄨ", "過": "ㄍㄨㄛˋ",
       "痛": "ㄊㄨㄥˋ", "陪": "ㄆㄟˊ", "等": "ㄉㄥˇ", "以": "ㄧˇ", "需": "ㄒㄩ"
     };
+
+    Object.assign(baseRuby,     {
+          不: "ㄅㄨˋ",
+          丟: "ㄉㄧㄡ",
+          主: "ㄓㄨˇ",
+          久: "ㄐㄧㄡˇ",
+          亂: "ㄌㄨㄢˋ",
+          享: "ㄒㄧㄤˇ",
+          亮: "ㄌㄧㄤˋ",
+          人: "ㄖㄣˊ",
+          件: "ㄐㄧㄢˋ",
+          伍: "ㄨˇ",
+          伴: "ㄅㄢˋ",
+          伸: "ㄕㄣ",
+          但: "ㄉㄢˋ",
+          低: "ㄉㄧ",
+          作: "ㄗㄨㄛ",
+          你: "ㄋㄧˇ",
+          修: "ㄒㄧㄡ",
+          個: "ㄍㄜˋ",
+          們: "ㄇㄣ˙",
+          借: "ㄐㄧㄝˋ",
+          值: "ㄓˊ",
+          假: "ㄐㄧㄚˇ",
+          兒: "ㄦˊ",
+          全: "ㄑㄩㄢˊ",
+          兩: "ㄌㄧㄤˇ",
+          六: "ㄌㄧㄡˋ",
+          冒: "ㄇㄠˋ",
+          別: "ㄅㄧㄝˊ",
+          則: "ㄗㄜˊ",
+          力: "ㄌㄧˋ",
+          助: "ㄓㄨˋ",
+          努: "ㄋㄨˇ",
+          勇: "ㄩㄥˇ",
+          午: "ㄨˇ",
+          卡: "ㄎㄚˇ",
+          原: "ㄩㄢˊ",
+          友: "ㄧㄡˇ",
+          叫: "ㄐㄧㄠˋ",
+          可: "ㄎㄜˇ",
+          台: "ㄊㄞˊ",
+          司: "ㄙ",
+          吃: "ㄔ",
+          合: "ㄏㄜˊ",
+          吐: "ㄊㄨˇ",
+          呼: "ㄏㄨ",
+          品: "ㄆㄧㄣˇ",
+          哪: "ㄋㄚˇ",
+          善: "ㄕㄢˋ",
+          喜: "ㄒㄧˇ",
+          喝: "ㄏㄜ",
+          單: "ㄕㄢˋ",
+          嘴: "ㄗㄨㄟˇ",
+          回: "ㄏㄨㄟˊ",
+          國: "ㄍㄨㄛˊ",
+          場: "ㄔㄤˊ",
+          塔: "ㄊㄚˇ",
+          壓: "ㄧㄚ",
+          壺: "ㄏㄨˊ",
+          外: "ㄨㄞˋ",
+          多: "ㄉㄨㄛ",
+          太: "ㄊㄞˋ",
+          失: "ㄕ",
+          她: "ㄊㄚ",
+          妹: "ㄇㄟˋ",
+          始: "ㄕˇ",
+          姨: "ㄧˊ",
+          嬤: "ㄇㄛˊ",
+          字: "ㄗˋ",
+          孤: "ㄍㄨ",
+          完: "ㄨㄢˊ",
+          室: "ㄕˋ",
+          害: "ㄏㄞˋ",
+          家: "ㄐㄧㄚ",
+          察: "ㄔㄚˊ",
+          專: "ㄓㄨㄢ",
+          對: "ㄉㄨㄟˋ",
+          就: "ㄐㄧㄡˋ",
+          屑: "ㄒㄧㄝˋ",
+          巴: "ㄅㄚ",
+          市: "ㄕˋ",
+          布: "ㄅㄨˋ",
+          帶: "ㄉㄞˋ",
+          平: "ㄆㄧㄥˊ",
+          待: "ㄉㄞ",
+          得: "ㄉㄜˊ",
+          復: "ㄈㄨˋ",
+          微: "ㄨㄟ",
+          忙: "ㄇㄤˊ",
+          快: "ㄎㄨㄞˋ",
+          怎: "ㄗㄣˇ",
+          怕: "ㄆㄚˋ",
+          急: "ㄐㄧˊ",
+          悶: "ㄇㄣ",
+          想: "ㄒㄧㄤˇ",
+          意: "ㄧˋ",
+          感: "ㄍㄢˇ",
+          懂: "ㄉㄨㄥˇ",
+          成: "ㄔㄥˊ",
+          戲: "ㄒㄧˋ",
+          戶: "ㄏㄨˋ",
+          房: "ㄈㄤˊ",
+          扁: "ㄆㄧㄢ",
+          手: "ㄕㄡˇ",
+          打: "ㄉㄚˊ",
+          找: "ㄓㄠˇ",
+          把: "ㄅㄚˇ",
+          抖: "ㄉㄡˇ",
+          折: "ㄓㄜˊ",
+          抱: "ㄅㄠˋ",
+          抹: "ㄇㄚ",
+          指: "ㄓˇ",
+          按: "ㄢˋ",
+          挫: "ㄘㄨㄛˋ",
+          挺: "ㄊㄧㄥˇ",
+          掉: "ㄉㄧㄠˋ",
+          排: "ㄆㄞˊ",
+          接: "ㄐㄧㄝ",
+          推: "ㄊㄨㄟ",
+          提: "ㄊㄧˊ",
+          插: "ㄔㄚ",
+          換: "ㄏㄨㄢˋ",
+          搭: "ㄉㄚ",
+          摸: "ㄇㄛ",
+          摺: "ㄓㄜˊ",
+          撞: "ㄓㄨㄤˋ",
+          操: "ㄘㄠ",
+          擦: "ㄘㄚ",
+          攤: "ㄊㄢ",
+          支: "ㄓ",
+          教: "ㄐㄧㄠˋ",
+          敢: "ㄍㄢˇ",
+          散: "ㄙㄢˋ",
+          數: "ㄕㄨˇ",
+          新: "ㄒㄧㄣ",
+          於: "ㄩˊ",
+          旁: "ㄆㄤˊ",
+          日: "ㄖˋ",
+          明: "ㄇㄧㄥˊ",
+          星: "ㄒㄧㄥ",
+          是: "ㄕˋ",
+          暖: "ㄋㄨㄢˇ",
+          暗: "ㄢˋ",
+          更: "ㄍㄥ",
+          最: "ㄗㄨㄟˋ",
+          朋: "ㄆㄥˊ",
+          服: "ㄈㄨˊ",
+          望: "ㄨㄤˋ",
+          期: "ㄑㄧ",
+          朵: "ㄉㄨㄛˇ",
+          束: "ㄕㄨˋ",
+          枕: "ㄓㄣˇ",
+          果: "ㄍㄨㄛˇ",
+          梯: "ㄊㄧ",
+          棄: "ㄑㄧˋ",
+          棵: "ㄎㄜ",
+          植: "ㄓˊ",
+          業: "ㄧㄝˋ",
+          樣: "ㄧㄤˋ",
+          機: "ㄐㄧ",
+          次: "ㄘˋ",
+          歉: "ㄑㄧㄢˋ",
+          歡: "ㄏㄨㄢ",
+          正: "ㄓㄥ",
+          步: "ㄅㄨˋ",
+          歪: "ㄨㄞ",
+          比: "ㄅㄧˇ",
+          決: "ㄐㄩㄝˊ",
+          沒: "ㄇㄟˊ",
+          洗: "ㄒㄧˇ",
+          流: "ㄌㄧㄡˊ",
+          浪: "ㄌㄤˋ",
+          淚: "ㄌㄟˋ",
+          溫: "ㄨㄣ",
+          照: "ㄓㄠˋ",
+          煩: "ㄈㄢˊ",
+          熱: "ㄖㄜˋ",
+          燈: "ㄉㄥ",
+          物: "ㄨˋ",
+          牽: "ㄑㄧㄢ",
+          玩: "ㄨㄢˊ",
+          班: "ㄅㄢ",
+          現: "ㄒㄧㄢˋ",
+          球: "ㄑㄧㄡˊ",
+          當: "ㄉㄤ",
+          發: "ㄈㄚ",
+          皺: "ㄓㄡˋ",
+          盛: "ㄕㄥˋ",
+          盤: "ㄆㄢˊ",
+          目: "ㄇㄨˋ",
+          直: "ㄓˊ",
+          眉: "ㄇㄟˊ",
+          眼: "ㄧㄢˇ",
+          睛: "ㄐㄧㄥ",
+          睜: "ㄓㄥ",
+          睡: "ㄕㄨㄟˋ",
+          知: "ㄓ",
+          破: "ㄆㄛˋ",
+          禮: "ㄌㄧˇ",
+          種: "ㄓㄨㄥˇ",
+          穿: "ㄔㄨㄢ",
+          站: "ㄓㄢˋ",
+          簿: "ㄅㄨˋ",
+          籃: "ㄌㄢˊ",
+          粉: "ㄈㄣˇ",
+          紅: "ㄏㄨㄥˊ",
+          結: "ㄐㄧㄝ",
+          絡: "ㄌㄠˋ",
+          緊: "ㄐㄧㄣˇ",
+          羞: "ㄒㄧㄡ",
+          翻: "ㄈㄢ",
+          耐: "ㄋㄞˋ",
+          耳: "ㄦˇ",
+          聆: "ㄌㄧㄥˊ",
+          聯: "ㄌㄧㄢˊ",
+          聽: "ㄊㄧㄥ",
+          肚: "ㄉㄨˇ",
+          胸: "ㄒㄩㄥ",
+          能: "ㄋㄥˊ",
+          腐: "ㄈㄨˇ",
+          腳: "ㄐㄧㄠˇ",
+          臉: "ㄌㄧㄢˇ",
+          舉: "ㄐㄩˇ",
+          舒: "ㄕㄨ",
+          菜: "ㄘㄞˋ",
+          落: "ㄌㄚˋ",
+          藍: "ㄌㄢˊ",
+          蘋: "ㄆㄧㄥˊ",
+          蠟: "ㄌㄚˋ",
+          衛: "ㄨㄟˋ",
+          表: "ㄅㄧㄠˇ",
+          袋: "ㄉㄞˋ",
+          被: "ㄅㄟˋ",
+          裡: "ㄌㄧˇ",
+          要: "ㄧㄠ",
+          見: "ㄐㄧㄢˋ",
+          規: "ㄍㄨㄟ",
+          覺: "ㄐㄧㄠˋ",
+          觀: "ㄍㄨㄢˋ",
+          解: "ㄒㄧㄝˋ",
+          試: "ㄕˋ",
+          話: "ㄏㄨㄚˋ",
+          語: "ㄩˇ",
+          請: "ㄑㄧㄥˇ",
+          講: "ㄐㄧㄤˇ",
+          識: "ㄕˊ",
+          變: "ㄅㄧㄢˋ",
+          讓: "ㄖㄤˋ",
+          讚: "ㄗㄢˋ",
+          豆: "ㄉㄡˋ",
+          貌: "ㄇㄠˋ",
+          買: "ㄇㄞˇ",
+          費: "ㄈㄟˋ",
+          貼: "ㄊㄧㄝ",
+          贏: "ㄧㄥˊ",
+          越: "ㄩㄝˋ",
+          跑: "ㄆㄠˊ",
+          跳: "ㄊㄧㄠˋ",
+          身: "ㄕㄣ",
+          車: "ㄔㄜ",
+          較: "ㄐㄧㄠˋ",
+          輪: "ㄌㄨㄣˊ",
+          輸: "ㄕㄨ",
+          辨: "ㄅㄧㄢˋ",
+          迎: "ㄧㄥˊ",
+          送: "ㄙㄨㄥˋ",
+          這: "ㄓㄜˋ",
+          遊: "ㄧㄡˊ",
+          道: "ㄉㄠˋ",
+          那: "ㄋㄚ",
+          醒: "ㄒㄧㄥˇ",
+          重: "ㄔㄨㄥˊ",
+          鈴: "ㄌㄧㄥˊ",
+          長: "ㄔㄤˊ",
+          門: "ㄇㄣˊ",
+          間: "ㄐㄧㄢ",
+          閱: "ㄩㄝˋ",
+          阿: "ㄚ",
+          隊: "ㄉㄨㄟˋ",
+          雙: "ㄕㄨㄤ",
+          難: "ㄋㄢˊ",
+          電: "ㄉㄧㄢˋ",
+          青: "ㄑㄧㄥ",
+          面: "ㄇㄧㄢˋ",
+          鞋: "ㄒㄧㄝˊ",
+          頭: "ㄊㄡˊ",
+          願: "ㄩㄢˋ",
+          食: "ㄕˊ",
+          餅: "ㄅㄧㄥˇ",
+          餐: "ㄘㄢ",
+          馬: "ㄇㄚˇ",
+          驚: "ㄐㄧㄥ",
+          體: "ㄊㄧˇ",
+          高: "ㄍㄠ",
+          鬆: "ㄙㄨㄥ",
+          黃: "ㄏㄨㄤˊ",
+          齊: "ㄑㄧˊ"
+    });
 
     const state = {
       active: sheets[0],
@@ -942,30 +1654,31 @@
       return `${Number(m)}月${Number(d)}日`;
     }
 
+    function getPracticeTerms(value) {
+      const raw = String(value || "").trim();
+      if (!raw) return [];
+      const explicitTerms = raw.split(/[，、,\n]+/).map((term) => term.trim()).filter(Boolean);
+      if (explicitTerms.length > 1) return explicitTerms.slice(0, 3);
+      const compact = raw.replace(/\s/g, "");
+      const terms = [];
+      for (let i = 0; i < compact.length && terms.length < 3; i += 2) {
+        terms.push(compact.slice(i, i + 2));
+      }
+      return terms;
+    }
+
     function renderPractice() {
-      const chars = Array.from(practiceText.value.replace(/[，、,\s]/g, "")).slice(0, 8);
+      const terms = getPracticeTerms(practiceText.value);
       const grid = document.getElementById("practiceGrid");
       grid.innerHTML = "";
-      chars.forEach((ch) => {
+      terms.forEach((term) => {
         const item = document.createElement("div");
         item.className = "practice-cell";
         item.innerHTML = `
-          <div class="model">${renderRuby(ch)}</div>
-          <div class="trace"><span></span><span></span><span></span></div>
+          <div class="model">${renderRuby(term)}</div>
+          <div class="trace"><span></span><span></span></div>
         `;
         grid.appendChild(item);
-      });
-    }
-
-    function renderZhuyinStrip() {
-      const chars = Array.from(practiceText.value.replace(/[，、,\s]/g, "")).slice(0, 6);
-      const strip = document.getElementById("zhuyinStrip");
-      strip.innerHTML = "";
-      chars.forEach((ch) => {
-        const box = document.createElement("div");
-        box.className = "zhuyin-box";
-        box.innerHTML = renderZhuyinMark(state.ruby[ch] || "");
-        strip.appendChild(box);
       });
     }
 
@@ -980,7 +1693,6 @@
       document.getElementById("drawLabel").textContent = drawText.value;
       document.getElementById("taskText").textContent = state.active.task;
       renderPractice();
-      renderZhuyinStrip();
     }
 
     function randomSheet() {
