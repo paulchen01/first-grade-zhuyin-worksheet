@@ -183,7 +183,7 @@
 
     .sheet-heading-line {
       display: flex;
-      align-items: baseline;
+      align-items: flex-end;
       gap: 12px;
       flex-wrap: wrap;
     }
@@ -202,18 +202,13 @@
       white-space: nowrap;
     }
 
-    .meta-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.45fr) minmax(0, .8fr);
-      gap: 18px;
-      margin-top: 14px;
-      font-size: 12.5pt;
-    }
-
-    .meta-field {
+    .header-name {
+      flex: 1 1 250px;
       display: flex;
       align-items: flex-end;
-      min-height: 34px;
+      min-width: 250px;
+      margin-left: auto;
+      font-size: 12.5pt;
     }
 
     .blank-line {
@@ -224,14 +219,10 @@
       transform: translateY(1px);
     }
 
-    .meta-name .blank-line {
+    .header-name .blank-line {
       flex: 1;
-      min-width: 12em;
-      height: 28px;
-    }
-
-    .meta-date .blank-line {
-      min-width: 8.5em;
+      min-width: 13em;
+      height: 30px;
     }
 
     .section {
@@ -328,26 +319,23 @@
     .practice-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
+      gap: 9px 12px;
     }
 
     .practice-cell {
-      min-height: 104px;
+      min-height: 100px;
       display: grid;
       grid-template-columns: 1fr;
       grid-template-rows: repeat(2, 1fr);
-      border: 1.4px solid var(--grid);
-      background: #fff;
+      gap: 6px;
     }
 
     .practice-row {
       display: grid;
       grid-template-columns: 62px 1fr;
       min-height: 0;
-    }
-
-    .practice-row + .practice-row {
-      border-top: 1.2px solid var(--grid);
+      border: 1.4px solid var(--grid);
+      background: #fff;
     }
 
     .practice-cell .model {
@@ -387,7 +375,7 @@
     }
 
     .draw-box {
-      min-height: 210px;
+      min-height: 260px;
       border: 2px solid #9da8b7;
       background:
         linear-gradient(#ffffff 31px, transparent 32px),
@@ -413,7 +401,7 @@
       background: #fff;
       border-radius: 8px;
       padding: 10px;
-      min-height: 210px;
+      min-height: 260px;
     }
 
     .prompt {
@@ -428,7 +416,7 @@
     }
 
     .free-response {
-      min-height: 145px;
+      min-height: 195px;
       margin-top: 12px;
     }
 
@@ -505,26 +493,18 @@
       }
 
       .sheet-subtitle,
-      .meta-grid {
+      .header-name {
         font-size: 11pt;
       }
 
-      .meta-grid {
-        margin-top: 7px;
-        grid-template-columns: 1.45fr .8fr;
-        gap: 14px;
+      .header-name {
+        flex-basis: 230px;
+        min-width: 230px;
       }
 
-      .meta-field {
-        min-height: 29px;
-      }
-
-      .meta-name .blank-line {
-        height: 24px;
-      }
-
-      .meta-date .blank-line {
-        min-width: 7.5em;
+      .header-name .blank-line {
+        min-width: 12em;
+        height: 26px;
       }
 
       .section {
@@ -551,7 +531,8 @@
       }
 
       .practice-cell {
-        min-height: 92px;
+        min-height: 86px;
+        gap: 5px;
       }
 
       .practice-row {
@@ -560,7 +541,7 @@
 
       .draw-box,
       .answer-box {
-        min-height: 188px;
+        min-height: 238px;
       }
 
       .draw-label {
@@ -577,7 +558,7 @@
       }
 
       .free-response {
-        min-height: 146px;
+        min-height: 190px;
       }
 
       .footer-note {
@@ -604,10 +585,6 @@
           <div class="field">
             <label for="studentName">姓名</label>
             <input id="studentName" value="" placeholder="學生姓名">
-          </div>
-          <div class="field">
-            <label for="sheetDate">日期</label>
-            <input id="sheetDate" type="date">
           </div>
         </div>
         <div class="actions">
@@ -663,13 +640,9 @@
           <div class="sheet-heading-line">
             <h2 class="sheet-title" id="sheetTitle"></h2>
             <p class="sheet-subtitle" id="sheetSubtitle"></p>
+            <div class="header-name">姓名：<span class="blank-line" id="nameLine"></span></div>
           </div>
         </header>
-
-        <div class="meta-grid">
-          <div class="meta-field meta-name">姓名：<span class="blank-line" id="nameLine"></span></div>
-          <div class="meta-field meta-date">日期：<span class="blank-line" id="dateLine"></span></div>
-        </div>
 
         <section class="section">
           <h3 class="section-title" id="sectionTitleOne"></h3>
@@ -1619,7 +1592,6 @@
 
     const themeSelect = document.getElementById("themeSelect");
     const studentName = document.getElementById("studentName");
-    const sheetDate = document.getElementById("sheetDate");
     const customTitle = document.getElementById("customTitle");
     const storyText = document.getElementById("storyText");
     const practiceText = document.getElementById("practiceText");
@@ -1761,7 +1733,6 @@
       document.getElementById("sheetTitle").textContent = customTitle.value || "一年級國語注音學習單";
       document.getElementById("sheetSubtitle").textContent = state.active.subtitle;
       document.getElementById("nameLine").textContent = studentName.value;
-      document.getElementById("dateLine").textContent = dateForPrint(sheetDate.value);
       document.getElementById("sectionTitleOne").innerHTML = renderRuby("一、讀一讀，抄一抄");
       document.getElementById("sectionTitleTwo").innerHTML = renderRuby("二、注音練習");
       document.getElementById("sectionTitleThree").innerHTML = renderRuby("三、畫一畫，寫一寫");
@@ -1783,7 +1754,6 @@
       const payload = {
         theme: state.active.key,
         name: studentName.value,
-        date: sheetDate.value,
         title: customTitle.value,
         story: storyText.value,
         practice: practiceText.value,
@@ -1803,7 +1773,6 @@
         state.active = sheet;
         themeSelect.value = sheet.key;
         studentName.value = payload.name || "";
-        sheetDate.value = payload.date || todayString();
         customTitle.value = payload.title || "一年級國語注音學習單";
         storyText.value = payload.story || sheet.story;
         practiceText.value = payload.practice || sheet.practice;
@@ -1818,7 +1787,6 @@
     }
 
     fillThemeOptions();
-    sheetDate.value = todayString();
     rubyText.value = "";
     if (!restoreSaved()) {
       loadSheet(sheets[0]);
@@ -1841,7 +1809,7 @@
       window.print();
     });
 
-    [studentName, sheetDate, customTitle, storyText, practiceText, questionText, drawText, rubyText]
+    [studentName, customTitle, storyText, practiceText, questionText, drawText, rubyText]
       .forEach((el) => el.addEventListener("input", render));
   </script>
 </body>
