@@ -354,13 +354,12 @@
 
     .practice-write {
       min-width: 0;
-      display: flex;
-      align-items: stretch;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
     }
 
-    .practice-write span {
-      width: 62px;
-      border-right: 2px solid var(--grid);
+    .practice-write span + span {
+      border-left: 2px solid var(--grid);
     }
 
     .practice-cell .model .phonetic-char {
@@ -562,10 +561,6 @@
 
       .practice-cell .model {
         font-size: 19pt;
-      }
-
-      .practice-write span {
-        width: 58px;
       }
 
       .draw-box,
@@ -1650,7 +1645,7 @@
       state.active = sheet;
       themeSelect.value = sheet.key;
       storyText.value = sheet.story;
-      practiceText.value = sheet.practice;
+      practiceText.value = normalizePracticeText(sheet.practice);
       questionText.value = sheet.question;
       drawText.value = sheet.drawing;
       render();
@@ -1738,6 +1733,10 @@
       return result.slice(0, 4);
     }
 
+    function normalizePracticeText(value) {
+      return completePracticeTerms(getPracticeTerms(value)).join("、");
+    }
+
     function renderPractice() {
       const terms = completePracticeTerms(getPracticeTerms(practiceText.value));
       const grid = document.getElementById("practiceGrid");
@@ -1757,7 +1756,7 @@
         item.innerHTML = chars.map((char) => `
           <div class="practice-row">
             <div class="model">${char ? renderRuby(char) : ""}</div>
-            <div class="practice-write"><span></span><span></span></div>
+            <div class="practice-write"><span></span><span></span><span></span><span></span></div>
           </div>
         `).join("");
         grid.appendChild(item);
@@ -1811,7 +1810,7 @@
         studentName.value = payload.name || "";
         customTitle.value = payload.title || "一年級國語注音學習單";
         storyText.value = payload.story || sheet.story;
-        practiceText.value = payload.practice || sheet.practice;
+        practiceText.value = normalizePracticeText(payload.practice || sheet.practice);
         questionText.value = payload.question || sheet.question;
         drawText.value = payload.drawing || sheet.drawing;
         rubyText.value = payload.ruby || "";
