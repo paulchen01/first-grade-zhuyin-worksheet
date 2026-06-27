@@ -58,6 +58,14 @@
       line-height: 1.25;
     }
 
+    .brand-title {
+      margin: 0 0 8px;
+      color: var(--accent);
+      font-size: 1.08rem;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
     .control-group {
       margin: 0 0 18px;
       padding-top: 16px;
@@ -142,6 +150,15 @@
       margin: 6px 0 0;
     }
 
+    .credit-note {
+      margin: 18px 0 0;
+      padding: 12px 0 0;
+      border-top: 1px solid #d7dee8;
+      color: var(--muted);
+      font-size: .86rem;
+      line-height: 1.7;
+    }
+
     .preview-shell {
       padding: 28px;
       overflow: auto;
@@ -158,12 +175,15 @@
     }
 
     .sheet-header {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 12px;
-      align-items: end;
       padding-bottom: 10px;
       border-bottom: 3px solid var(--accent);
+    }
+
+    .sheet-heading-line {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      flex-wrap: wrap;
     }
 
     .sheet-title {
@@ -174,9 +194,10 @@
     }
 
     .sheet-subtitle {
-      margin: 4px 0 0;
+      margin: 0;
       color: var(--muted);
       font-size: 12pt;
+      white-space: nowrap;
     }
 
     .meta-grid {
@@ -292,9 +313,9 @@
     }
 
     .practice-cell {
-      min-height: 70px;
+      min-height: 88px;
       display: grid;
-      grid-template-columns: 42px 1fr;
+      grid-template-columns: 56px 1fr;
       border: 1.4px solid var(--grid);
       background: #fff;
     }
@@ -473,8 +494,83 @@
         width: 210mm;
         min-height: 297mm;
         margin: 0;
+        padding: 8mm 10mm;
         box-shadow: none;
-        break-after: page;
+        break-after: auto;
+      }
+
+      .sheet-title {
+        font-size: 21pt;
+      }
+
+      .sheet-subtitle,
+      .meta-grid {
+        font-size: 11pt;
+      }
+
+      .meta-grid {
+        margin-top: 7px;
+      }
+
+      .section {
+        margin-top: 8px;
+      }
+
+      .section-title {
+        margin-bottom: 5px;
+        font-size: 13pt;
+      }
+
+      .section-title .tag {
+        width: 24px;
+        height: 24px;
+        font-size: 10pt;
+      }
+
+      .story-box {
+        padding: 6px 9px 5px;
+        font-size: 14pt;
+        line-height: 1.72;
+      }
+
+      .copy-lines {
+        gap: 4px;
+      }
+
+      .copy-line {
+        height: 22px;
+      }
+
+      .practice-cell {
+        min-height: 76px;
+      }
+
+      .draw-box,
+      .answer-box {
+        min-height: 158px;
+      }
+
+      .prompt {
+        margin-bottom: 5px;
+        font-size: 11.5pt;
+      }
+
+      .answer-line {
+        height: 24px;
+      }
+
+      .zhuyin-strip {
+        gap: 4px;
+        margin-top: 5px;
+      }
+
+      .zhuyin-box {
+        min-height: 36px;
+      }
+
+      .footer-note {
+        margin-top: 8px;
+        font-size: 10.5pt;
       }
     }
   </style>
@@ -482,6 +578,7 @@
 <body>
   <main class="app">
     <aside class="controls" aria-label="學習單控制區">
+      <div class="brand-title">飽螺的社工甘苦便條紙製作</div>
       <h1>一年級注音學習單產生器</h1>
 
       <div class="control-group">
@@ -539,24 +636,20 @@
 
       <div class="control-group">
         <div class="actions">
-          <button id="googleTextBtn" type="button">Google搜尋</button>
-          <button id="googleImageBtn" type="button">Google圖片</button>
-        </div>
-        <div class="actions" style="margin-top:8px;">
-          <button id="saveBtn" type="button">儲存內容</button>
-          <button class="warn" id="resetBtn" type="button">還原範例</button>
+          <button id="saveBtn" type="button">存成PDF</button>
+          <button id="resetBtn" type="button">列印</button>
         </div>
       </div>
+      <p class="credit-note">本學習單生產器參考富田國小所提供之相關教案設計，在此感謝老師的創意。</p>
     </aside>
 
     <section class="preview-shell" aria-label="學習單預覽">
       <article class="page" id="worksheet">
         <header class="sheet-header">
-          <div>
+          <div class="sheet-heading-line">
             <h2 class="sheet-title" id="sheetTitle"></h2>
             <p class="sheet-subtitle" id="sheetSubtitle"></p>
           </div>
-          <div aria-hidden="true" style="font-size:36pt;color:var(--accent);line-height:1;">ㄅ</div>
         </header>
 
         <div class="meta-grid">
@@ -683,6 +776,39 @@
         question: "孩子每天想看什麼？",
         drawing: "畫出一棵正在長大的植物",
         task: "觀察家裡或路邊的一片葉子。"
+      },
+      {
+        key: "sel_responsibility",
+        label: "整理座位",
+        topic: "負責",
+        subtitle: "SEL主題：負責",
+        story: "下課前，我把鉛筆放進筆盒。椅子靠好，桌上也收乾淨。我做好自己的小事，心裡很踏實。",
+        practice: "負責整理座位鉛筆桌椅",
+        question: "故事裡，孩子做了哪一件負責的事？",
+        drawing: "畫出你會自己整理的一樣東西",
+        task: "今天自己收好一樣物品。"
+      },
+      {
+        key: "sel_emotion",
+        label: "我會說心情",
+        topic: "情緒",
+        subtitle: "SEL主題：情緒",
+        story: "我今天有一點生氣，因為積木倒了。我先停一下，慢慢吸一口氣。後來，我告訴老師我的心情。",
+        practice: "情緒生氣停吸老師告訴",
+        question: "孩子生氣時，先做了什麼？",
+        drawing: "畫出你今天的一種心情",
+        task: "用一句話告訴家人今天的心情。"
+      },
+      {
+        key: "sel_empathy",
+        label: "我會關心同學",
+        topic: "同理",
+        subtitle: "SEL主題：同理",
+        story: "同學跌倒了，坐在地上哭。我走過去，問他痛不痛。老師來以前，我陪他等一下。",
+        practice: "同理關心跌倒哭痛陪等",
+        question: "故事裡，孩子怎麼關心同學？",
+        drawing: "畫出你幫助別人的樣子",
+        task: "今天注意一位需要幫忙的人。"
       }
     ];
 
@@ -712,7 +838,16 @@
       "讀": "ㄉㄨˊ", "抄": "ㄔㄠ", "練": "ㄌㄧㄢˋ", "習": "ㄒㄧˊ", "畫": "ㄏㄨㄚˋ",
       "問": "ㄨㄣˋ", "題": "ㄊㄧˊ", "孩": "ㄏㄞˊ", "子": "ㄗˇ", "什": "ㄕㄣˊ",
       "麼": "ㄇㄜ˙", "誰": "ㄕㄟˊ", "做": "ㄗㄨㄛˋ", "文": "ㄨㄣˊ", "具": "ㄐㄩˋ",
-      "用": "ㄩㄥˋ", "顏": "ㄧㄢˊ", "顧": "ㄍㄨˋ", "路": "ㄌㄨˋ", "片": "ㄆㄧㄢˋ"
+      "用": "ㄩㄥˋ", "顏": "ㄧㄢˊ", "顧": "ㄍㄨˋ", "路": "ㄌㄨˋ", "片": "ㄆㄧㄢˋ",
+      "負": "ㄈㄨˋ", "責": "ㄗㄜˊ", "整": "ㄓㄥˇ", "理": "ㄌㄧˇ", "座": "ㄗㄨㄛˋ",
+      "位": "ㄨㄟˋ", "進": "ㄐㄧㄣˋ", "盒": "ㄏㄜˊ", "椅": "ㄧˇ", "靠": "ㄎㄠˋ",
+      "收": "ㄕㄡ", "乾": "ㄍㄢ", "淨": "ㄐㄧㄥˋ", "踏": "ㄊㄚˋ", "實": "ㄕˊ",
+      "情": "ㄑㄧㄥˊ", "緒": "ㄒㄩˋ", "點": "ㄉㄧㄢˇ", "生": "ㄕㄥ", "氣": "ㄑㄧˋ",
+      "因": "ㄧㄣ", "為": "ㄨㄟˋ", "積": "ㄐㄧ", "木": "ㄇㄨˋ", "倒": "ㄉㄠˇ",
+      "停": "ㄊㄧㄥˊ", "吸": "ㄒㄧ", "口": "ㄎㄡˇ", "來": "ㄌㄞˊ", "告": "ㄍㄠˋ",
+      "訴": "ㄙㄨˋ", "老": "ㄌㄠˇ", "師": "ㄕ", "同": "ㄊㄨㄥˊ", "理": "ㄌㄧˇ",
+      "關": "ㄍㄨㄢ", "跌": "ㄉㄧㄝˊ", "倒": "ㄉㄠˇ", "哭": "ㄎㄨ", "過": "ㄍㄨㄛˋ",
+      "痛": "ㄊㄨㄥˋ", "陪": "ㄆㄟˊ", "等": "ㄉㄥˇ", "以": "ㄧˇ", "需": "ㄒㄩ"
     };
 
     const state = {
@@ -853,16 +988,6 @@
       loadSheet(selected);
     }
 
-    function openGoogle(kind) {
-      const q = kind === "image"
-        ? `${state.active.label} 小學一年級 圖畫 參考`
-        : `${state.active.label} 小學一年級 注音`;
-      const url = kind === "image"
-        ? `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(q)}`
-        : `https://www.google.com/search?q=${encodeURIComponent(q)}`;
-      window.open(url, "_blank", "noopener,noreferrer");
-    }
-
     function saveCurrent() {
       const payload = {
         theme: state.active.key,
@@ -916,19 +1041,13 @@
     document.getElementById("randomBtn").addEventListener("click", randomSheet);
     document.getElementById("printBtn").addEventListener("click", () => window.print());
     document.getElementById("applyBtn").addEventListener("click", render);
-    document.getElementById("googleTextBtn").addEventListener("click", () => openGoogle("text"));
-    document.getElementById("googleImageBtn").addEventListener("click", () => openGoogle("image"));
     document.getElementById("saveBtn").addEventListener("click", () => {
       saveCurrent();
       render();
+      window.print();
     });
     document.getElementById("resetBtn").addEventListener("click", () => {
-      localStorage.removeItem("first-grade-zhuyin-worksheet");
-      studentName.value = "";
-      sheetDate.value = todayString();
-      customTitle.value = "一年級國語注音學習單";
-      rubyText.value = "";
-      loadSheet(sheets[0]);
+      window.print();
     });
 
     [studentName, sheetDate, customTitle, storyText, practiceText, questionText, drawText, rubyText]
