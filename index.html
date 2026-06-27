@@ -355,11 +355,12 @@
     .practice-write {
       min-width: 0;
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 
-    .practice-write span + span {
-      border-left: 2px solid var(--grid);
+    .write-box {
+      min-width: 0;
+      box-shadow: inset 0 0 0 1.4px var(--grid);
     }
 
     .practice-cell .model .phonetic-char {
@@ -1756,7 +1757,12 @@
         item.innerHTML = chars.map((char) => `
           <div class="practice-row">
             <div class="model">${char ? renderRuby(char) : ""}</div>
-            <div class="practice-write"><span></span><span></span><span></span><span></span></div>
+            <div class="practice-write">
+              <span class="write-box"></span>
+              <span class="write-box"></span>
+              <span class="write-box"></span>
+              <span class="write-box"></span>
+            </div>
           </div>
         `).join("");
         grid.appendChild(item);
