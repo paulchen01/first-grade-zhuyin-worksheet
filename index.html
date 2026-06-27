@@ -319,23 +319,26 @@
     .practice-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 11px 12px;
+      gap: 12px;
     }
 
     .practice-cell {
-      min-height: 136px;
+      min-height: 216px;
       display: grid;
       grid-template-columns: 1fr;
-      grid-template-rows: repeat(2, 1fr);
-      gap: 8px;
+      grid-template-rows: repeat(4, 1fr);
+      border: 1.4px solid var(--grid);
+      background: #fff;
     }
 
     .practice-row {
       display: grid;
       grid-template-columns: 68px 1fr;
       min-height: 0;
-      border: 1.4px solid var(--grid);
-      background: #fff;
+    }
+
+    .practice-row + .practice-row {
+      border-top: 1.4px solid var(--grid);
     }
 
     .practice-cell .model {
@@ -351,12 +354,13 @@
 
     .practice-write {
       min-width: 0;
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      display: flex;
+      align-items: stretch;
     }
 
-    .practice-write span + span {
-      border-left: 2px solid var(--grid);
+    .practice-write span {
+      width: 62px;
+      border-right: 2px solid var(--grid);
     }
 
     .practice-cell .model .phonetic-char {
@@ -549,8 +553,7 @@
       }
 
       .practice-cell {
-        min-height: 124px;
-        gap: 7px;
+        min-height: 204px;
       }
 
       .practice-row {
@@ -561,9 +564,13 @@
         font-size: 19pt;
       }
 
+      .practice-write span {
+        width: 58px;
+      }
+
       .draw-box,
       .answer-box {
-        min-height: 198px;
+        min-height: 148px;
       }
 
       .draw-label {
@@ -580,7 +587,7 @@
       }
 
       .free-response {
-        min-height: 150px;
+        min-height: 104px;
       }
 
       .footer-note {
@@ -1735,9 +1742,16 @@
       const terms = completePracticeTerms(getPracticeTerms(practiceText.value));
       const grid = document.getElementById("practiceGrid");
       grid.innerHTML = "";
-      terms.forEach((term) => {
-        const chars = Array.from(term).slice(0, 2);
-        while (chars.length < 2) chars.push("");
+      const columns = [
+        [terms[0], terms[2]],
+        [terms[1], terms[3]]
+      ];
+      columns.forEach((columnTerms) => {
+        const chars = columnTerms.flatMap((term) => {
+          const termChars = Array.from(term || "").slice(0, 2);
+          while (termChars.length < 2) termChars.push("");
+          return termChars;
+        });
         const item = document.createElement("div");
         item.className = "practice-cell";
         item.innerHTML = chars.map((char) => `
