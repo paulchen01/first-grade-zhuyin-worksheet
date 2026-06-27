@@ -172,6 +172,8 @@
       background: var(--paper);
       box-shadow: 0 10px 35px rgba(15, 23, 42, .16);
       font-family: "BopomofoRuby1909-v1", "BpmfZihiSans", "DFKai-SB", "KaiTi", "Noto Sans TC", "Microsoft JhengHei", serif;
+      display: flex;
+      flex-direction: column;
     }
 
     .sheet-header {
@@ -298,11 +300,11 @@
     .copy-lines {
       margin-top: 8px;
       display: grid;
-      gap: 7px;
+      gap: 10px;
     }
 
     .copy-line {
-      height: 30px;
+      height: 36px;
       border-bottom: 1.5px solid #8a94a3;
     }
 
@@ -315,9 +317,20 @@
     .practice-cell {
       min-height: 122px;
       display: grid;
-      grid-template-columns: 82px 1fr;
+      grid-template-columns: 1fr;
+      grid-template-rows: repeat(2, 1fr);
       border: 1.4px solid var(--grid);
       background: #fff;
+    }
+
+    .practice-row {
+      display: grid;
+      grid-template-columns: 62px 1fr;
+      min-height: 0;
+    }
+
+    .practice-row + .practice-row {
+      border-top: 1.2px solid var(--grid);
     }
 
     .practice-cell .model {
@@ -329,6 +342,12 @@
       font-weight: 700;
       line-height: 1;
       padding: 6px;
+    }
+
+    .practice-write {
+      min-width: 0;
+      background:
+        linear-gradient(90deg, transparent 49.4%, rgba(203, 213, 225, .72) 49.5%, rgba(203, 213, 225, .72) 50.5%, transparent 50.6%);
     }
 
     .practice-cell .model .phonetic-char {
@@ -377,7 +396,7 @@
 
     .draw-label {
       position: absolute;
-      top: 8px;
+      top: 18px;
       left: 10px;
       padding: 2px 7px;
       background: rgba(255, 253, 248, .92);
@@ -405,12 +424,18 @@
       border-bottom: 1.4px solid #8a94a3;
     }
 
-    .footer-note {
+    .free-response {
+      min-height: 145px;
       margin-top: 12px;
+    }
+
+    .footer-note {
+      margin-top: auto;
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 14px;
       font-size: 12pt;
+      padding-top: 12px;
     }
 
     .small-lines {
@@ -464,6 +489,7 @@
 
       .page {
         width: 210mm;
+        height: 297mm;
         min-height: 297mm;
         margin: 0;
         padding: 8.5mm 10mm;
@@ -500,21 +526,28 @@
       }
 
       .copy-lines {
-        gap: 6px;
+        gap: 8px;
       }
 
       .copy-line {
-        height: 28px;
+        height: 33px;
       }
 
       .practice-cell {
-        min-height: 124px;
-        grid-template-columns: 86px 1fr;
+        min-height: 116px;
+      }
+
+      .practice-row {
+        grid-template-columns: 58px 1fr;
       }
 
       .draw-box,
       .answer-box {
-        min-height: 238px;
+        min-height: 218px;
+      }
+
+      .draw-label {
+        top: 18px;
       }
 
       .prompt {
@@ -526,9 +559,14 @@
         height: 32px;
       }
 
+      .free-response {
+        min-height: 146px;
+      }
+
       .footer-note {
-        margin-top: 12px;
+        margin-top: auto;
         font-size: 10.5pt;
+        padding-top: 10px;
       }
     }
   </style>
@@ -624,6 +662,7 @@
             <div class="copy-line"></div>
             <div class="copy-line"></div>
             <div class="copy-line"></div>
+            <div class="copy-line"></div>
           </div>
         </section>
 
@@ -640,9 +679,7 @@
             </div>
             <div class="answer-box">
               <p class="prompt" id="questionBox"></p>
-              <div class="answer-line"></div>
-              <div class="answer-line"></div>
-              <div class="answer-line"></div>
+              <div class="free-response" aria-hidden="true"></div>
             </div>
           </div>
         </section>
@@ -1668,12 +1705,16 @@
       const grid = document.getElementById("practiceGrid");
       grid.innerHTML = "";
       terms.forEach((term) => {
+        const chars = Array.from(term).slice(0, 2);
+        while (chars.length < 2) chars.push("");
         const item = document.createElement("div");
         item.className = "practice-cell";
-        item.innerHTML = `
-          <div class="model">${renderRuby(term)}</div>
-          <div class="trace"><span></span><span></span></div>
-        `;
+        item.innerHTML = chars.map((char) => `
+          <div class="practice-row">
+            <div class="model">${char ? renderRuby(char) : ""}</div>
+            <div class="practice-write"></div>
+          </div>
+        `).join("");
         grid.appendChild(item);
       });
     }
