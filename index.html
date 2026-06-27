@@ -466,7 +466,7 @@
         width: 210mm;
         min-height: 297mm;
         margin: 0;
-        padding: 8mm 10mm;
+        padding: 8.5mm 10mm;
         box-shadow: none;
         break-after: auto;
       }
@@ -485,42 +485,36 @@
       }
 
       .section {
-        margin-top: 8px;
+        margin-top: 10px;
       }
 
       .section-title {
-        margin-bottom: 5px;
-        font-size: 13pt;
-      }
-
-      .section-title .tag {
-        width: 24px;
-        height: 24px;
-        font-size: 10pt;
+        margin-bottom: 7px;
+        font-size: 14pt;
       }
 
       .story-box {
-        padding: 6px 9px 5px;
+        padding: 7px 10px 6px;
         font-size: 14pt;
-        line-height: 1.72;
+        line-height: 1.78;
       }
 
       .copy-lines {
-        gap: 4px;
+        gap: 6px;
       }
 
       .copy-line {
-        height: 22px;
+        height: 28px;
       }
 
       .practice-cell {
-        min-height: 98px;
-        grid-template-columns: 72px 1fr;
+        min-height: 124px;
+        grid-template-columns: 86px 1fr;
       }
 
       .draw-box,
       .answer-box {
-        min-height: 178px;
+        min-height: 238px;
       }
 
       .prompt {
@@ -529,11 +523,11 @@
       }
 
       .answer-line {
-        height: 24px;
+        height: 32px;
       }
 
       .footer-note {
-        margin-top: 8px;
+        margin-top: 12px;
         font-size: 10.5pt;
       }
     }
@@ -623,7 +617,7 @@
         </div>
 
         <section class="section">
-          <h3 class="section-title"><span class="tag">一</span><span>讀一讀，抄一抄</span></h3>
+          <h3 class="section-title" id="sectionTitleOne"></h3>
           <div class="story-box" id="storyBox"></div>
           <div class="copy-lines" aria-hidden="true">
             <div class="copy-line"></div>
@@ -634,12 +628,12 @@
         </section>
 
         <section class="section">
-          <h3 class="section-title"><span class="tag">二</span><span>注音練習</span></h3>
+          <h3 class="section-title" id="sectionTitleTwo"></h3>
           <div class="practice-grid" id="practiceGrid"></div>
         </section>
 
         <section class="section">
-          <h3 class="section-title"><span class="tag">三</span><span>畫一畫，寫一寫</span></h3>
+          <h3 class="section-title" id="sectionTitleThree"></h3>
           <div class="activity-grid">
             <div class="draw-box">
               <div class="draw-label" id="drawLabel"></div>
@@ -655,13 +649,13 @@
 
         <footer class="footer-note">
           <div>
-            今日小任務：<span id="taskText"></span>
+            <span id="taskLabel"></span><span id="taskText"></span>
             <div class="small-lines">
               <div class="answer-line"></div>
             </div>
           </div>
           <div>
-            我覺得今天：
+            <span id="moodLabel"></span>
             <div class="small-lines">
               <div class="answer-line"></div>
             </div>
@@ -1559,7 +1553,9 @@
           高: "ㄍㄠ",
           鬆: "ㄙㄨㄥ",
           黃: "ㄏㄨㄤˊ",
-          齊: "ㄑㄧˊ"
+          齊: "ㄑㄧˊ",
+          任: "ㄖㄣˋ",
+          務: "ㄨˋ"
     });
 
     const state = {
@@ -1688,10 +1684,15 @@
       document.getElementById("sheetSubtitle").textContent = state.active.subtitle;
       document.getElementById("nameLine").textContent = studentName.value;
       document.getElementById("dateLine").textContent = dateForPrint(sheetDate.value);
+      document.getElementById("sectionTitleOne").innerHTML = renderRuby("一、讀一讀，抄一抄");
+      document.getElementById("sectionTitleTwo").innerHTML = renderRuby("二、注音練習");
+      document.getElementById("sectionTitleThree").innerHTML = renderRuby("三、畫一畫，寫一寫");
       document.getElementById("storyBox").innerHTML = renderRuby(storyText.value);
       document.getElementById("questionBox").innerHTML = renderRuby(questionText.value);
-      document.getElementById("drawLabel").textContent = drawText.value;
-      document.getElementById("taskText").textContent = state.active.task;
+      document.getElementById("drawLabel").innerHTML = renderRuby(drawText.value);
+      document.getElementById("taskLabel").innerHTML = renderRuby("今日小任務：");
+      document.getElementById("taskText").innerHTML = renderRuby(state.active.task);
+      document.getElementById("moodLabel").innerHTML = renderRuby("我覺得今天：");
       renderPractice();
     }
 
