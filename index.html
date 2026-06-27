@@ -346,7 +346,7 @@
       place-items: center;
       border-right: 1.4px solid var(--grid);
       color: #1f2933;
-      font-size: 20pt;
+      font-size: 22pt;
       font-weight: 700;
       line-height: 1;
       padding: 6px;
@@ -561,7 +561,7 @@
       }
 
       .practice-cell .model {
-        font-size: 19pt;
+        font-size: 21pt;
       }
 
       .draw-box,
@@ -614,7 +614,6 @@
         </div>
         <div class="actions">
           <button class="primary" id="randomBtn" type="button">隨機產生</button>
-          <button id="printBtn" type="button">列印</button>
         </div>
       </div>
 
@@ -718,556 +717,1229 @@
   </main>
 
   <script>
-    const sheets =     [
+    const selCategories = [
           {
-                key: "park",
-                label: "公園散步",
-                topic: "觀察",
-                subtitle: "主題：公園散步",
-                story: "今天早上，我和媽媽去公園。樹上有綠葉，地上有小花。我看一看，也慢慢說出看到的東西。",
-                practice: "公園、樹葉、小花",
-                question: "故事裡，孩子在公園看到什麼？",
-                drawing: "畫出公園裡的一樣東西",
-                task: "和家人說出今天看到的一種顏色。"
+                "key": "self_awareness",
+                "label": "自我覺察"
           },
           {
-                key: "rain",
-                label: "雨天上學",
-                topic: "照顧",
-                subtitle: "主題：雨天上學",
-                story: "早上，下起小雨。爸爸幫我拿雨衣，我自己背好書包。到學校時，我跟爸爸說謝謝。",
-                practice: "小雨、雨衣、書包",
-                question: "故事裡，誰幫孩子拿雨衣？",
-                drawing: "畫出一件雨天會用到的東西",
-                task: "回家後，把雨具放在固定的位置。"
+                "key": "self_management",
+                "label": "自我管理"
           },
           {
-                key: "library",
-                label: "圖書角",
-                topic: "閱讀",
-                subtitle: "主題：圖書角",
-                story: "下課時，我走到圖書角。桌上有一本故事書，我安靜地看。看到好笑的地方，我小聲笑了。",
-                practice: "圖書、故事、安靜",
-                question: "孩子在圖書角做了什麼？",
-                drawing: "畫出一本你想看的書",
-                task: "今天選一本書，翻開看三頁。"
+                "key": "social_awareness",
+                "label": "社會覺察"
           },
           {
-                key: "homework",
-                label: "完成作業",
-                topic: "專心",
-                subtitle: "主題：完成作業",
-                story: "晚飯後，我坐在書桌前。鉛筆和橡皮都放好了。我先寫一行字，再休息一下。",
-                practice: "書桌、鉛筆、橡皮",
-                question: "孩子先寫了什麼？",
-                drawing: "畫出你寫作業時會用的文具",
-                task: "完成一小段功課後，把文具收好。"
+                "key": "relationship_skills",
+                "label": "人際技巧"
           },
           {
-                key: "friend",
-                label: "和同學分享",
-                topic: "分享",
-                subtitle: "主題：和同學分享",
-                story: "美勞課時，我有兩張色紙。同學少了一張，我分給他一張。他笑著說謝謝，我也很開心。",
-                practice: "同學、色紙、開心",
-                question: "孩子把什麼分給同學？",
-                drawing: "畫出你願意分享的一樣東西",
-                task: "今天對一位同學或家人說一句好話。"
+                "key": "responsible_decision",
+                "label": "負責任的決策"
+          }
+    ];
+
+    const sheets = [
+          {
+                "key": "park",
+                "label": "公園散步",
+                "topic": "觀察",
+                "subtitle": "SEL主題：負責任的決策｜觀察",
+                "story": "今天早上，我和媽媽去公園。樹上有綠葉，地上有小花。我看一看，也慢慢說出看到的東西。",
+                "practice": "公園、樹葉、小花、小路",
+                "question": "故事裡，孩子在公園看到什麼？",
+                "drawing": "畫出公園裡的一樣東西",
+                "task": "和家人說出今天看到的一種顏色。",
+                "selCategory": "responsible_decision"
           },
           {
-                key: "plant",
-                label: "照顧小芽",
-                topic: "耐心",
-                subtitle: "主題：照顧小芽",
-                story: "窗邊有一盆小芽。我輕輕澆水，也看看泥土。小芽還很小，我會每天來看它。",
-                practice: "小芽、澆水、泥土",
-                question: "孩子每天想看什麼？",
-                drawing: "畫出一棵正在長大的植物",
-                task: "觀察家裡或路邊的一片葉子。"
+                "key": "rain",
+                "label": "雨天上學",
+                "topic": "照顧",
+                "subtitle": "SEL主題：自我管理｜照顧",
+                "story": "早上，下起小雨。爸爸幫我拿雨衣，我自己背好書包。到學校時，我跟爸爸說謝謝。",
+                "practice": "小雨、雨衣、書包、雨鞋",
+                "question": "故事裡，誰幫孩子拿雨衣？",
+                "drawing": "畫出一件雨天會用到的東西",
+                "task": "回家後，把雨具放在固定的位置。",
+                "selCategory": "self_management"
           },
           {
-                key: "sel_responsibility",
-                label: "整理座位",
-                topic: "負責",
-                subtitle: "SEL主題：負責",
-                story: "下課前，我把鉛筆放進筆盒。椅子靠好，桌上也收乾淨。我做好自己的小事，心裡很踏實。",
-                practice: "負責、座位、筆盒",
-                question: "孩子做了哪一件負責的事？",
-                drawing: "畫出你會自己整理的一樣東西",
-                task: "今天自己收好一樣物品。"
+                "key": "library",
+                "label": "圖書角",
+                "topic": "閱讀",
+                "subtitle": "SEL主題：自我管理｜閱讀",
+                "story": "下課時，我走到圖書角。桌上有一本故事書，我安靜地看。看到好笑的地方，我小聲笑了。",
+                "practice": "圖書、故事、安靜、書架",
+                "question": "孩子在圖書角做了什麼？",
+                "drawing": "畫出一本你想看的書",
+                "task": "今天選一本書，翻開看三頁。",
+                "selCategory": "self_management"
           },
           {
-                key: "sel_emotion",
-                label: "我會說心情",
-                topic: "情緒",
-                subtitle: "SEL主題：情緒",
-                story: "我今天有一點生氣，因為積木倒了。我先停一下，慢慢吸一口氣。後來，我告訴老師我的心情。",
-                practice: "情緒、生氣、心情",
-                question: "孩子生氣時，先做了什麼？",
-                drawing: "畫出你今天的一種心情",
-                task: "用一句話告訴家人今天的心情。"
+                "key": "homework",
+                "label": "完成作業",
+                "topic": "專心",
+                "subtitle": "SEL主題：自我管理｜專心",
+                "story": "晚飯後，我坐在書桌前。鉛筆和橡皮都放好了。我先寫一行字，再休息一下。",
+                "practice": "書桌、鉛筆、橡皮、作業",
+                "question": "孩子先寫了什麼？",
+                "drawing": "畫出你寫作業時會用的文具",
+                "task": "完成一小段功課後，把文具收好。",
+                "selCategory": "self_management"
           },
           {
-                key: "sel_empathy",
-                label: "我會關心同學",
-                topic: "同理",
-                subtitle: "SEL主題：同理",
-                story: "同學跌倒了，坐在地上哭。我走過去，問他痛不痛。老師來以前，我陪他等一下。",
-                practice: "同理、關心、陪伴",
-                question: "孩子怎麼關心同學？",
-                drawing: "畫出你幫助別人的樣子",
-                task: "今天注意一位需要幫忙的人。"
+                "key": "friend",
+                "label": "和同學分享",
+                "topic": "分享",
+                "subtitle": "SEL主題：人際技巧｜分享",
+                "story": "美勞課時，我有兩張色紙。同學少了一張，我分給他一張。他笑著說謝謝，我也很開心。",
+                "practice": "同學、色紙、開心、朋友",
+                "question": "孩子把什麼分給同學？",
+                "drawing": "畫出你願意分享的一樣東西",
+                "task": "今天對一位同學或家人說一句好話。",
+                "selCategory": "relationship_skills"
           },
           {
-                key: "line_up",
-                label: "排隊等一等",
-                topic: "等待",
-                subtitle: "SEL主題：等待",
-                story: "下課後，大家排隊去洗手。我站在後面，沒有推人。輪到我時，我慢慢把手洗乾淨。",
-                practice: "排隊、洗手、輪到",
-                question: "孩子排隊時沒有做什麼？",
-                drawing: "畫出排隊洗手的樣子",
-                task: "今天排隊時，練習等一等。"
+                "key": "plant",
+                "label": "照顧小芽",
+                "topic": "耐心",
+                "subtitle": "SEL主題：自我管理｜耐心",
+                "story": "窗邊有一盆小芽。我輕輕澆水，也看看泥土。小芽還很小，我會每天來看它。",
+                "practice": "小芽、澆水、泥土、葉子",
+                "question": "孩子每天想看什麼？",
+                "drawing": "畫出一棵正在長大的植物",
+                "task": "觀察家裡或路邊的一片葉子。",
+                "selCategory": "self_management"
           },
           {
-                key: "toy_box",
-                label: "收玩具",
-                topic: "負責",
-                subtitle: "SEL主題：負責",
-                story: "遊戲時間結束了，我看到地上有積木。我把積木放回盒子。教室變乾淨，我心裡很舒服。",
-                practice: "玩具、積木、盒子",
-                question: "孩子把積木放到哪裡？",
-                drawing: "畫出整理好的玩具",
-                task: "玩完一樣東西後，把它放回去。"
+                "key": "sel_responsibility",
+                "label": "整理座位",
+                "topic": "負責",
+                "subtitle": "SEL主題：負責任的決策｜負責",
+                "story": "下課前，我把鉛筆放進筆盒。椅子靠好，桌上也收乾淨。我做好自己的小事，心裡很踏實。",
+                "practice": "負責、座位、筆盒、抽屜",
+                "question": "孩子做了哪一件負責的事？",
+                "drawing": "畫出你會自己整理的一樣東西",
+                "task": "今天自己收好一樣物品。",
+                "selCategory": "responsible_decision"
           },
           {
-                key: "borrow_eraser",
-                label: "借橡皮",
-                topic: "禮貌",
-                subtitle: "SEL主題：禮貌",
-                story: "我寫字時，發現橡皮不見了。我小聲問同學，可不可以借一下。用完後，我說謝謝，也把橡皮還回去。",
-                practice: "橡皮、借用、謝謝",
-                question: "孩子用完橡皮後說了什麼？",
-                drawing: "畫出你會有禮貌借東西的樣子",
-                task: "今天借東西時，說請和謝謝。"
+                "key": "sel_emotion",
+                "label": "我會說心情",
+                "topic": "情緒",
+                "subtitle": "SEL主題：自我覺察｜情緒",
+                "story": "我今天有一點生氣，因為積木倒了。我先停一下，慢慢吸一口氣。後來，我告訴老師我的心情。",
+                "practice": "情緒、生氣、心情、臉色",
+                "question": "孩子生氣時，先做了什麼？",
+                "drawing": "畫出你今天的一種心情",
+                "task": "用一句話告訴家人今天的心情。",
+                "selCategory": "self_awareness"
           },
           {
-                key: "morning_hello",
-                label: "早安問好",
-                topic: "禮貌",
-                subtitle: "SEL主題：禮貌",
-                story: "早上進教室，我看到老師。我停下腳步，笑著說早安。老師也笑了，我覺得很溫暖。",
-                practice: "早安、老師、溫暖",
-                question: "孩子看到老師時說了什麼？",
-                drawing: "畫出你和老師問好的樣子",
-                task: "今天主動和一個人問好。"
+                "key": "sel_empathy",
+                "label": "我會關心同學",
+                "topic": "同理",
+                "subtitle": "SEL主題：社會覺察｜同理",
+                "story": "同學跌倒了，坐在地上哭。我走過去，問他痛不痛。老師來以前，我陪他等一下。",
+                "practice": "同理、關心、陪伴、朋友",
+                "question": "孩子怎麼關心同學？",
+                "drawing": "畫出你幫助別人的樣子",
+                "task": "今天注意一位需要幫忙的人。",
+                "selCategory": "social_awareness"
           },
           {
-                key: "lunch",
-                label: "午餐時間",
-                topic: "感謝",
-                subtitle: "SEL主題：感謝",
-                story: "午餐到了，阿姨幫大家盛飯。我雙手接過餐盤，輕輕說謝謝。吃飯時，我慢慢吃，也不浪費。",
-                practice: "午餐、餐盤、感謝",
-                question: "孩子接過餐盤時說了什麼？",
-                drawing: "畫出你喜歡的一樣午餐",
-                task: "吃飯前，向幫忙的人說謝謝。"
+                "key": "line_up",
+                "label": "排隊等一等",
+                "topic": "等待",
+                "subtitle": "SEL主題：人際技巧｜等待",
+                "story": "下課後，大家排隊去洗手。我站在後面，沒有推人。輪到我時，我慢慢把手洗乾淨。",
+                "practice": "排隊、洗手、輪到、隊伍",
+                "question": "孩子排隊時沒有做什麼？",
+                "drawing": "畫出排隊洗手的樣子",
+                "task": "今天排隊時，練習等一等。",
+                "selCategory": "relationship_skills"
           },
           {
-                key: "nervous_stage",
-                label: "上台有點緊張",
-                topic: "緊張",
-                subtitle: "SEL主題：情緒辨識",
-                story: "國語課時，老師請我上台說話。我的手有一點抖，心也跳得快。我知道自己有點緊張，就先吸一口氣。",
-                practice: "上台、緊張、吸氣",
-                question: "孩子怎麼知道自己有點緊張？",
-                drawing: "畫出你緊張時的樣子",
-                task: "緊張時，先慢慢吸一口氣。"
+                "key": "toy_box",
+                "label": "收玩具",
+                "topic": "負責",
+                "subtitle": "SEL主題：人際技巧｜負責",
+                "story": "遊戲時間結束了，我看到地上有積木。我把積木放回盒子。教室變乾淨，我心裡很舒服。",
+                "practice": "玩具、積木、盒子、玩具箱",
+                "question": "孩子把積木放到哪裡？",
+                "drawing": "畫出整理好的玩具",
+                "task": "玩完一樣東西後，把它放回去。",
+                "selCategory": "relationship_skills"
           },
           {
-                key: "shy_new_seat",
-                label: "換座位有點害羞",
-                topic: "害羞",
-                subtitle: "SEL主題：情緒辨識",
-                story: "今天老師幫大家換座位。我旁邊坐了新的同學，我有一點害羞。我先小聲說你好，心裡就比較放鬆。",
-                practice: "座位、害羞、你好",
-                question: "孩子害羞時，先小聲說了什麼？",
-                drawing: "畫出你害羞時的表情",
-                task: "害羞時，可以先說一句短短的話。"
+                "key": "borrow_eraser",
+                "label": "借橡皮",
+                "topic": "禮貌",
+                "subtitle": "SEL主題：人際技巧｜禮貌",
+                "story": "我寫字時，發現橡皮不見了。我小聲問同學，可不可以借一下。用完後，我說謝謝，也把橡皮還回去。",
+                "practice": "橡皮、借用、謝謝、文具",
+                "question": "孩子用完橡皮後說了什麼？",
+                "drawing": "畫出你會有禮貌借東西的樣子",
+                "task": "今天借東西時，說請和謝謝。",
+                "selCategory": "relationship_skills"
           },
           {
-                key: "sad_paper",
-                label: "作品破了很難過",
-                topic: "難過",
-                subtitle: "SEL主題：情緒辨識",
-                story: "我的圖畫紙不小心破了一角。我低著頭，不太想說話。老師說我看起來很難過，陪我一起修一修。",
-                practice: "難過、圖畫、修好",
-                question: "老師怎麼知道孩子難過？",
-                drawing: "畫出難過時的表情",
-                task: "難過時，可以告訴大人發生什麼事。"
+                "key": "morning_hello",
+                "label": "早安問好",
+                "topic": "禮貌",
+                "subtitle": "SEL主題：人際技巧｜禮貌",
+                "story": "早上進教室，我看到老師。我停下腳步，笑著說早安。老師也笑了，我覺得很溫暖。",
+                "practice": "早安、老師、溫暖、走廊",
+                "question": "孩子看到老師時說了什麼？",
+                "drawing": "畫出你和老師問好的樣子",
+                "task": "今天主動和一個人問好。",
+                "selCategory": "relationship_skills"
           },
           {
-                key: "clean_table",
-                label: "擦桌子",
-                topic: "幫忙",
-                subtitle: "SEL主題：幫忙",
-                story: "點心後，桌上有一點餅乾屑。我拿抹布輕輕擦桌子。同學看到了，也一起幫忙。",
-                practice: "桌子、抹布、幫忙",
-                question: "孩子用什麼擦桌子？",
-                drawing: "畫出你幫忙整理的樣子",
-                task: "今天幫忙擦一個小地方。"
+                "key": "lunch",
+                "label": "午餐時間",
+                "topic": "感謝",
+                "subtitle": "SEL主題：社會覺察｜感謝",
+                "story": "午餐到了，阿姨幫大家盛飯。我雙手接過餐盤，輕輕說謝謝。吃飯時，我慢慢吃，也不浪費。",
+                "practice": "午餐、餐盤、感謝、湯碗",
+                "question": "孩子接過餐盤時說了什麼？",
+                "drawing": "畫出你喜歡的一樣午餐",
+                "task": "吃飯前，向幫忙的人說謝謝。",
+                "selCategory": "social_awareness"
           },
           {
-                key: "take_turns",
-                label: "輪流玩球",
-                topic: "輪流",
-                subtitle: "SEL主題：輪流",
-                story: "操場上，大家想玩球。我先等同學丟完，再伸手接球。輪流玩，大家都玩得到。",
-                practice: "玩球、輪流、接球",
-                question: "孩子為什麼要等一等？",
-                drawing: "畫出大家輪流玩球",
-                task: "今天玩玩具時，練習輪流。"
+                "key": "nervous_stage",
+                "label": "上台有點緊張",
+                "topic": "緊張",
+                "subtitle": "SEL主題：自我覺察｜緊張",
+                "story": "國語課時，老師請我上台說話。我的手有一點抖，心也跳得快。我知道自己有點緊張，就先吸一口氣。",
+                "practice": "上台、緊張、吸氣、聲音",
+                "question": "孩子怎麼知道自己有點緊張？",
+                "drawing": "畫出你緊張時的樣子",
+                "task": "緊張時，先慢慢吸一口氣。",
+                "selCategory": "self_awareness"
           },
           {
-                key: "speak_up",
-                label: "勇敢開口",
-                topic: "勇敢",
-                subtitle: "SEL主題：勇敢",
-                story: "我看不懂題目，心裡有點急。我舉手問老師，可不可以再說一次。老師慢慢說，我就比較懂了。",
-                practice: "勇敢、舉手、題目",
-                question: "孩子不懂時做了什麼？",
-                drawing: "畫出你舉手問問題",
-                task: "遇到不懂的事，練習開口問。"
+                "key": "shy_new_seat",
+                "label": "換座位有點害羞",
+                "topic": "害羞",
+                "subtitle": "SEL主題：自我覺察｜害羞",
+                "story": "今天老師幫大家換座位。我旁邊坐了新的同學，我有一點害羞。我先小聲說你好，心裡就比較放鬆。",
+                "practice": "座位、害羞、你好、朋友",
+                "question": "孩子害羞時，先小聲說了什麼？",
+                "drawing": "畫出你害羞時的表情",
+                "task": "害羞時，可以先說一句短短的話。",
+                "selCategory": "self_awareness"
           },
           {
-                key: "wait",
-                label: "等一下",
-                topic: "等待",
-                subtitle: "SEL主題：等待",
-                story: "我想和媽媽說話，可是媽媽正在講電話。我先坐在旁邊等一下。媽媽講完後，就看著我聽我說。",
-                practice: "媽媽、電話、等待",
-                question: "媽媽講電話時，孩子怎麼做？",
-                drawing: "畫出等待的樣子",
-                task: "今天練習等一件小事。"
+                "key": "sad_paper",
+                "label": "作品破了很難過",
+                "topic": "難過",
+                "subtitle": "SEL主題：自我覺察｜難過",
+                "story": "我的圖畫紙不小心破了一角。我低著頭，不太想說話。老師說我看起來很難過，陪我一起修一修。",
+                "practice": "難過、圖畫、修好、作品",
+                "question": "老師怎麼知道孩子難過？",
+                "drawing": "畫出難過時的表情",
+                "task": "難過時，可以告訴大人發生什麼事。",
+                "selCategory": "self_awareness"
           },
           {
-                key: "sorry",
-                label: "我會道歉",
-                topic: "修復",
-                subtitle: "SEL主題：修復",
-                story: "我跑太快，不小心撞到同學。同學皺著眉頭，我停下來。說對不起後，我陪他去找老師。",
-                practice: "道歉、同學、老師",
-                question: "孩子撞到同學後說了什麼？",
-                drawing: "畫出你說對不起的樣子",
-                task: "做錯事時，練習說對不起。"
+                "key": "clean_table",
+                "label": "擦桌子",
+                "topic": "幫忙",
+                "subtitle": "SEL主題：負責任的決策｜幫忙",
+                "story": "點心後，桌上有一點餅乾屑。我拿抹布輕輕擦桌子。同學看到了，也一起幫忙。",
+                "practice": "桌子、抹布、幫忙、水桶",
+                "question": "孩子用什麼擦桌子？",
+                "drawing": "畫出你幫忙整理的樣子",
+                "task": "今天幫忙擦一個小地方。",
+                "selCategory": "responsible_decision"
           },
           {
-                key: "listen",
-                label: "聽同學說",
-                topic: "聆聽",
-                subtitle: "SEL主題：聆聽",
-                story: "同學正在說他的圖畫。我沒有插嘴，也看著他。聽完以後，我說我很喜歡那棵樹。",
-                practice: "聆聽、圖畫、喜歡",
-                question: "孩子聽同學說話時沒有做什麼？",
-                drawing: "畫出你聽人說話的樣子",
-                task: "今天聽一個人把話說完。"
+                "key": "take_turns",
+                "label": "輪流玩球",
+                "topic": "輪流",
+                "subtitle": "SEL主題：人際技巧｜輪流",
+                "story": "操場上，大家想玩球。我先等同學丟完，再伸手接球。輪流玩，大家都玩得到。",
+                "practice": "玩球、輪流、接球、同學",
+                "question": "孩子為什麼要等一等？",
+                "drawing": "畫出大家輪流玩球",
+                "task": "今天玩玩具時，練習輪流。",
+                "selCategory": "relationship_skills"
           },
           {
-                key: "breath",
-                label: "安靜呼吸",
-                topic: "情緒",
-                subtitle: "SEL主題：情緒",
-                story: "我排隊等很久，心裡有點煩。我把手放在肚子上，慢慢吸氣。再慢慢吐氣後，我覺得好一點。",
-                practice: "呼吸、肚子、吐氣",
-                question: "孩子把手放在哪裡？",
-                drawing: "畫出慢慢呼吸的樣子",
-                task: "今天練習慢慢吸氣三次。"
+                "key": "speak_up",
+                "label": "勇敢開口",
+                "topic": "勇敢",
+                "subtitle": "SEL主題：人際技巧｜勇敢",
+                "story": "我看不懂題目，心裡有點急。我舉手問老師，可不可以再說一次。老師慢慢說，我就比較懂了。",
+                "practice": "勇敢、舉手、題目、老師",
+                "question": "孩子不懂時做了什麼？",
+                "drawing": "畫出你舉手問問題",
+                "task": "遇到不懂的事，練習開口問。",
+                "selCategory": "relationship_skills"
           },
           {
-                key: "try_again",
-                label: "再試一次",
-                topic: "挫折",
-                subtitle: "SEL主題：挫折",
-                story: "我摺紙時，角沒有對齊。我有一點想放棄。老師說可以再試一次，我就慢慢重摺。",
-                practice: "摺紙、放棄、再試",
-                question: "孩子後來做了什麼？",
-                drawing: "畫出你再試一次的樣子",
-                task: "今天遇到難事時，先再試一次。"
+                "key": "wait",
+                "label": "等一下",
+                "topic": "等待",
+                "subtitle": "SEL主題：自我管理｜等待",
+                "story": "我想和媽媽說話，可是媽媽正在講電話。我先坐在旁邊等一下。媽媽講完後，就看著我聽我說。",
+                "practice": "媽媽、電話、等待、沙發",
+                "question": "媽媽講電話時，孩子怎麼做？",
+                "drawing": "畫出等待的樣子",
+                "task": "今天練習等一件小事。",
+                "selCategory": "self_management"
           },
           {
-                key: "dark",
-                label: "我有點怕",
-                topic: "情緒",
-                subtitle: "SEL主題：情緒",
-                story: "晚上房間變暗，我有一點怕。我抱著小枕頭，叫爸爸陪我看一下。燈亮了，我知道房間很安全。",
-                practice: "晚上、房間、安全",
-                question: "孩子害怕時請誰陪他？",
-                drawing: "畫出讓你安心的一樣東西",
-                task: "害怕時，告訴大人你的感覺。"
+                "key": "sorry",
+                "label": "我會道歉",
+                "topic": "修復",
+                "subtitle": "SEL主題：人際技巧｜修復",
+                "story": "我跑太快，不小心撞到同學。同學皺著眉頭，我停下來。說對不起後，我陪他去找老師。",
+                "practice": "道歉、同學、老師、朋友",
+                "question": "孩子撞到同學後說了什麼？",
+                "drawing": "畫出你說對不起的樣子",
+                "task": "做錯事時，練習說對不起。",
+                "selCategory": "relationship_skills"
           },
           {
-                key: "miss_home",
-                label: "想家",
-                topic: "情緒",
-                subtitle: "SEL主題：情緒",
-                story: "早上到學校，我有一點想家。老師牽著我的手，帶我看教室的花。過了一會兒，我開始想玩積木。",
-                practice: "想家、牽手、教室",
-                question: "老師帶孩子看什麼？",
-                drawing: "畫出讓你安心的地方",
-                task: "想家時，試著說出你的感覺。"
+                "key": "listen",
+                "label": "聽同學說",
+                "topic": "聆聽",
+                "subtitle": "SEL主題：人際技巧｜聆聽",
+                "story": "同學正在說他的圖畫。我沒有插嘴，也看著他。聽完以後，我說我很喜歡那棵樹。",
+                "practice": "聆聽、圖畫、喜歡、耳朵",
+                "question": "孩子聽同學說話時沒有做什麼？",
+                "drawing": "畫出你聽人說話的樣子",
+                "task": "今天聽一個人把話說完。",
+                "selCategory": "relationship_skills"
           },
           {
-                key: "like_me",
-                label: "喜歡自己",
-                topic: "自我",
-                subtitle: "SEL主題：自我",
-                story: "我今天自己穿好鞋子。鞋帶有一點歪，可是我有努力。媽媽說，慢慢學就會更好。",
-                practice: "自己、鞋子、努力",
-                question: "孩子今天自己做了什麼？",
-                drawing: "畫出你會自己做的一件事",
-                task: "今天說出自己做得好的一件事。"
+                "key": "breath",
+                "label": "安靜呼吸",
+                "topic": "情緒",
+                "subtitle": "SEL主題：自我管理｜情緒",
+                "story": "我排隊等很久，心裡有點煩。我把手放在肚子上，慢慢吸氣。再慢慢吐氣後，我覺得好一點。",
+                "practice": "呼吸、肚子、吐氣、心口",
+                "question": "孩子把手放在哪裡？",
+                "drawing": "畫出慢慢呼吸的樣子",
+                "task": "今天練習慢慢吸氣三次。",
+                "selCategory": "self_management"
           },
           {
-                key: "book_care",
-                label: "照顧書本",
-                topic: "負責",
-                subtitle: "SEL主題：負責",
-                story: "我翻書時，看到書角皺皺的。我用手慢慢壓平，再把書放好。書本被照顧好，下次還能看。",
-                practice: "書本、書角、照顧",
-                question: "孩子看到書角皺皺的，做了什麼？",
-                drawing: "畫出一本被照顧好的書",
-                task: "今天輕輕翻書，不折書角。"
+                "key": "try_again",
+                "label": "再試一次",
+                "topic": "挫折",
+                "subtitle": "SEL主題：自我管理｜挫折",
+                "story": "我摺紙時，角沒有對齊。我有一點想放棄。老師說可以再試一次，我就慢慢重摺。",
+                "practice": "摺紙、放棄、再試、作品",
+                "question": "孩子後來做了什麼？",
+                "drawing": "畫出你再試一次的樣子",
+                "task": "今天遇到難事時，先再試一次。",
+                "selCategory": "self_management"
           },
           {
-                key: "helper",
-                label: "小小值日生",
-                topic: "負責",
-                subtitle: "SEL主題：負責",
-                story: "今天輪到我當值日生。我把粉筆盒放好，也提醒同學排椅子。教室整齊了，我覺得很有力氣。",
-                practice: "值日、粉筆、整齊",
-                question: "孩子今天當什麼？",
-                drawing: "畫出值日生幫忙的樣子",
-                task: "今天完成一件班級小工作。"
+                "key": "dark",
+                "label": "我有點怕",
+                "topic": "情緒",
+                "subtitle": "SEL主題：自我覺察｜情緒",
+                "story": "晚上房間變暗，我有一點怕。我抱著小枕頭，叫爸爸陪我看一下。燈亮了，我知道房間很安全。",
+                "practice": "晚上、房間、安全、小燈",
+                "question": "孩子害怕時請誰陪他？",
+                "drawing": "畫出讓你安心的一樣東西",
+                "task": "害怕時，告訴大人你的感覺。",
+                "selCategory": "self_awareness"
           },
           {
-                key: "blocks",
-                label: "搭積木",
-                topic: "合作",
-                subtitle: "SEL主題：合作",
-                story: "我和同學一起搭高塔。我拿紅色積木，他拿藍色積木。高塔倒了，我們笑一笑，再一起搭。",
-                practice: "積木、高塔、合作",
-                question: "高塔倒了以後，孩子們怎麼做？",
-                drawing: "畫出你想搭的高塔",
-                task: "今天和一個人一起完成小事。"
+                "key": "miss_home",
+                "label": "想家",
+                "topic": "情緒",
+                "subtitle": "SEL主題：自我覺察｜情緒",
+                "story": "早上到學校，我有一點想家。老師牽著我的手，帶我看教室的花。過了一會兒，我開始想玩積木。",
+                "practice": "想家、牽手、教室、家人",
+                "question": "老師帶孩子看什麼？",
+                "drawing": "畫出讓你安心的地方",
+                "task": "想家時，試著說出你的感覺。",
+                "selCategory": "self_awareness"
           },
           {
-                key: "sibling",
-                label: "照顧妹妹",
-                topic: "同理",
-                subtitle: "SEL主題：同理",
-                story: "妹妹跌倒了，眼淚一直掉。我拿衛生紙給她，也坐在旁邊陪她。她不哭了，我也放心了。",
-                practice: "妹妹、眼淚、放心",
-                question: "孩子拿什麼給妹妹？",
-                drawing: "畫出你照顧家人的樣子",
-                task: "今天關心家人的一個感覺。"
+                "key": "like_me",
+                "label": "喜歡自己",
+                "topic": "自我",
+                "subtitle": "SEL主題：自我覺察｜自我",
+                "story": "我今天自己穿好鞋子。鞋帶有一點歪，可是我有努力。媽媽說，慢慢學就會更好。",
+                "practice": "自己、鞋子、努力、笑臉",
+                "question": "孩子今天自己做了什麼？",
+                "drawing": "畫出你會自己做的一件事",
+                "task": "今天說出自己做得好的一件事。",
+                "selCategory": "self_awareness"
           },
           {
-                key: "cross_road",
-                label: "過馬路",
-                topic: "安全",
-                subtitle: "主題：安全",
-                story: "放學後，我和爸爸走到路口。紅燈亮時，我們停下來。綠燈亮了，我牽著爸爸慢慢走。",
-                practice: "馬路、紅燈、綠燈",
-                question: "紅燈亮時，孩子怎麼做？",
-                drawing: "畫出安全過馬路",
-                task: "過馬路時，先看燈號。"
+                "key": "book_care",
+                "label": "照顧書本",
+                "topic": "負責",
+                "subtitle": "SEL主題：負責任的決策｜負責",
+                "story": "我翻書時，看到書角皺皺的。我用手慢慢壓平，再把書放好。書本被照顧好，下次還能看。",
+                "practice": "書本、書角、照顧、書套",
+                "question": "孩子看到書角皺皺的，做了什麼？",
+                "drawing": "畫出一本被照顧好的書",
+                "task": "今天輕輕翻書，不折書角。",
+                "selCategory": "responsible_decision"
           },
           {
-                key: "school_bag",
-                label: "整理書包",
-                topic: "自理",
-                subtitle: "SEL主題：自理",
-                story: "睡覺前，我打開書包。我把聯絡簿放進去，也放好水壺。明天早上，我就不會急急忙忙。",
-                practice: "書包、水壺、明天",
-                question: "孩子把什麼放進書包？",
-                drawing: "畫出整理好的書包",
-                task: "睡前看一次明天要帶的東西。"
+                "key": "helper",
+                "label": "小小值日生",
+                "topic": "負責",
+                "subtitle": "SEL主題：負責任的決策｜負責",
+                "story": "今天輪到我當值日生。我把粉筆盒放好，也提醒同學排椅子。教室整齊了，我覺得很有力氣。",
+                "practice": "值日、粉筆、整齊、黑板",
+                "question": "孩子今天當什麼？",
+                "drawing": "畫出值日生幫忙的樣子",
+                "task": "今天完成一件班級小工作。",
+                "selCategory": "responsible_decision"
           },
           {
-                key: "drink_water",
-                label: "喝水休息",
-                topic: "照顧自己",
-                subtitle: "SEL主題：自我照顧",
-                story: "跑步後，我的臉熱熱的。老師提醒我先喝水，再坐下休息。喝完水後，我覺得身體舒服多了。",
-                practice: "喝水、休息、身體",
-                question: "跑步後，老師提醒孩子先做什麼？",
-                drawing: "畫出你喝水休息的樣子",
-                task: "今天記得喝水。"
+                "key": "blocks",
+                "label": "搭積木",
+                "topic": "合作",
+                "subtitle": "SEL主題：人際技巧｜合作",
+                "story": "我和同學一起搭高塔。我拿紅色積木，他拿藍色積木。高塔倒了，我們笑一笑，再一起搭。",
+                "practice": "積木、高塔、合作、同伴",
+                "question": "高塔倒了以後，孩子們怎麼做？",
+                "drawing": "畫出你想搭的高塔",
+                "task": "今天和一個人一起完成小事。",
+                "selCategory": "relationship_skills"
           },
           {
-                key: "disappointed_sticker",
-                label: "沒有拿到貼紙",
-                topic: "失望",
-                subtitle: "SEL主題：情緒辨識",
-                story: "今天老師發貼紙，我沒有拿到。我嘴巴扁扁的，心裡有點失望。老師提醒我，下次還可以再努力。",
-                practice: "貼紙、失望、努力",
-                question: "孩子沒有拿到貼紙時，心裡覺得怎樣？",
-                drawing: "畫出失望時的表情",
-                task: "失望時，說出自己的感覺。"
+                "key": "sibling",
+                "label": "照顧妹妹",
+                "topic": "同理",
+                "subtitle": "SEL主題：社會覺察｜同理",
+                "story": "妹妹跌倒了，眼淚一直掉。我拿衛生紙給她，也坐在旁邊陪她。她不哭了，我也放心了。",
+                "practice": "妹妹、眼淚、放心、家人",
+                "question": "孩子拿什麼給妹妹？",
+                "drawing": "畫出你照顧家人的樣子",
+                "task": "今天關心家人的一個感覺。",
+                "selCategory": "social_awareness"
           },
           {
-                key: "new_student",
-                label: "新同學",
-                topic: "同理",
-                subtitle: "SEL主題：同理",
-                story: "班上來了一位新同學。他站在門口，有一點害羞。我走過去，帶他看自己的座位。",
-                practice: "新同學、害羞、座位",
-                question: "孩子怎麼幫新同學？",
-                drawing: "畫出你歡迎新同學",
-                task: "今天對一個人露出微笑。"
+                "key": "cross_road",
+                "label": "過馬路",
+                "topic": "安全",
+                "subtitle": "SEL主題：負責任的決策｜安全",
+                "story": "放學後，我和爸爸走到路口。紅燈亮時，我們停下來。綠燈亮了，我牽著爸爸慢慢走。",
+                "practice": "馬路、紅燈、綠燈、人行道",
+                "question": "紅燈亮時，孩子怎麼做？",
+                "drawing": "畫出安全過馬路",
+                "task": "過馬路時，先看燈號。",
+                "selCategory": "responsible_decision"
           },
           {
-                key: "lost_crayon",
-                label: "找蠟筆",
-                topic: "解決問題",
-                subtitle: "SEL主題：解決問題",
-                story: "我的黃色蠟筆不見了。我先看桌子下面，再看筆盒裡。最後，我在畫紙旁邊找到它。",
-                practice: "蠟筆、黃色、找到",
-                question: "孩子最後在哪裡找到蠟筆？",
-                drawing: "畫出一支蠟筆",
-                task: "找不到東西時，先慢慢找三個地方。"
+                "key": "school_bag",
+                "label": "整理書包",
+                "topic": "自理",
+                "subtitle": "SEL主題：自我管理｜自理",
+                "story": "睡覺前，我打開書包。我把聯絡簿放進去，也放好水壺。明天早上，我就不會急急忙忙。",
+                "practice": "書包、水壺、明天、聯絡簿",
+                "question": "孩子把什麼放進書包？",
+                "drawing": "畫出整理好的書包",
+                "task": "睡前看一次明天要帶的東西。",
+                "selCategory": "self_management"
           },
           {
-                key: "quiet_corner",
-                label: "安靜角",
-                topic: "情緒",
-                subtitle: "SEL主題：情緒",
-                story: "我覺得心裡亂亂的。老師讓我到安靜角坐一下。我抱著小抱枕，慢慢安靜下來。",
-                practice: "安靜、抱枕、心裡",
-                question: "孩子到哪裡坐一下？",
-                drawing: "畫出讓你安靜的角落",
-                task: "心裡亂亂時，找一個安靜地方。"
+                "key": "drink_water",
+                "label": "喝水休息",
+                "topic": "照顧自己",
+                "subtitle": "SEL主題：自我管理｜照顧自己",
+                "story": "跑步後，我的臉熱熱的。老師提醒我先喝水，再坐下休息。喝完水後，我覺得身體舒服多了。",
+                "practice": "喝水、休息、身體、水壺",
+                "question": "跑步後，老師提醒孩子先做什麼？",
+                "drawing": "畫出你喝水休息的樣子",
+                "task": "今天記得喝水。",
+                "selCategory": "self_management"
           },
           {
-                key: "help_grandma",
-                label: "幫阿嬤",
-                topic: "關心",
-                subtitle: "SEL主題：關心",
-                story: "阿嬤拿著菜籃，走得慢慢的。我幫她按電梯，也等她一起進去。阿嬤摸摸我的頭，說我長大了。",
-                practice: "阿嬤、電梯、關心",
-                question: "孩子幫阿嬤做了什麼？",
-                drawing: "畫出你幫家人的樣子",
-                task: "今天幫家人做一件小事。"
+                "key": "disappointed_sticker",
+                "label": "沒有拿到貼紙",
+                "topic": "失望",
+                "subtitle": "SEL主題：自我覺察｜失望",
+                "story": "今天老師發貼紙，我沒有拿到。我嘴巴扁扁的，心裡有點失望。老師提醒我，下次還可以再努力。",
+                "practice": "貼紙、失望、努力、心情",
+                "question": "孩子沒有拿到貼紙時，心裡覺得怎樣？",
+                "drawing": "畫出失望時的表情",
+                "task": "失望時，說出自己的感覺。",
+                "selCategory": "self_awareness"
           },
           {
-                key: "market",
-                label: "市場買菜",
-                topic: "觀察",
-                subtitle: "主題：市場買菜",
-                story: "星期六，我和爸爸去市場。菜攤上有青菜、豆腐和蘋果。我幫爸爸數一數袋子。",
-                practice: "市場、青菜、蘋果",
-                question: "菜攤上有哪一樣東西？",
-                drawing: "畫出市場裡的一樣食物",
-                task: "今天說出一種你吃到的食物。"
+                "key": "new_student",
+                "label": "新同學",
+                "topic": "同理",
+                "subtitle": "SEL主題：社會覺察｜同理",
+                "story": "班上來了一位新同學。他站在門口，有一點害羞。我走過去，帶他看自己的座位。",
+                "practice": "新同學、害羞、座位、朋友",
+                "question": "孩子怎麼幫新同學？",
+                "drawing": "畫出你歡迎新同學",
+                "task": "今天對一個人露出微笑。",
+                "selCategory": "social_awareness"
           },
           {
-                key: "bus",
-                label: "搭公車",
-                topic: "規則",
-                subtitle: "SEL主題：規則",
-                story: "公車來了，我牽著媽媽上車。車上有人在休息，我小聲說話。下車前，我按鈴提醒司機。",
-                practice: "公車、小聲、按鈴",
-                question: "孩子在車上為什麼小聲說話？",
-                drawing: "畫出你搭公車的樣子",
-                task: "在公共地方，練習小聲說話。"
+                "key": "lost_crayon",
+                "label": "找蠟筆",
+                "topic": "解決問題",
+                "subtitle": "SEL主題：負責任的決策｜解決問題",
+                "story": "我的黃色蠟筆不見了。我先看桌子下面，再看筆盒裡。最後，我在畫紙旁邊找到它。",
+                "practice": "蠟筆、黃色、找到、抽屜",
+                "question": "孩子最後在哪裡找到蠟筆？",
+                "drawing": "畫出一支蠟筆",
+                "task": "找不到東西時，先慢慢找三個地方。",
+                "selCategory": "responsible_decision"
           },
           {
-                key: "surprise_card",
-                label: "收到小卡很驚喜",
-                topic: "驚喜",
-                subtitle: "SEL主題：情緒辨識",
-                story: "下課時，同學送我一張小卡。我睜大眼睛，嘴巴也笑開了。我知道這是驚喜，心裡暖暖的。",
-                practice: "小卡、驚喜、笑開",
-                question: "孩子收到小卡時，臉上有什麼樣子？",
-                drawing: "畫出驚喜時的表情",
-                task: "今天觀察一個人的表情。"
+                "key": "quiet_corner",
+                "label": "安靜角",
+                "topic": "情緒",
+                "subtitle": "SEL主題：自我覺察｜情緒",
+                "story": "我覺得心裡亂亂的。老師讓我到安靜角坐一下。我抱著小抱枕，慢慢安靜下來。",
+                "practice": "安靜、抱枕、心裡、墊子",
+                "question": "孩子到哪裡坐一下？",
+                "drawing": "畫出讓你安靜的角落",
+                "task": "心裡亂亂時，找一個安靜地方。",
+                "selCategory": "self_awareness"
           },
           {
-                key: "lost_game",
-                label: "輸了也可以",
-                topic: "挫折",
-                subtitle: "SEL主題：挫折",
-                story: "玩遊戲時，我沒有贏。我心裡悶悶的，但沒有丟玩具。休息一下後，我和同學再玩一次。",
-                practice: "遊戲、休息、再玩",
-                question: "孩子輸了以後沒有做什麼？",
-                drawing: "畫出你休息一下的樣子",
-                task: "輸了時，練習深呼吸。"
+                "key": "help_grandma",
+                "label": "幫阿嬤",
+                "topic": "關心",
+                "subtitle": "SEL主題：社會覺察｜關心",
+                "story": "阿嬤拿著菜籃，走得慢慢的。我幫她按電梯，也等她一起進去。阿嬤摸摸我的頭，說我長大了。",
+                "practice": "阿嬤、電梯、關心、扶手",
+                "question": "孩子幫阿嬤做了什麼？",
+                "drawing": "畫出你幫家人的樣子",
+                "task": "今天幫家人做一件小事。",
+                "selCategory": "social_awareness"
           },
           {
-                key: "thank_card",
-                label: "謝謝卡",
-                topic: "感謝",
-                subtitle: "SEL主題：感謝",
-                story: "老師今天幫我找回水壺。我想做一張小卡片送給老師。卡片上畫了花，也寫了謝謝。",
-                practice: "卡片、老師、謝謝",
-                question: "孩子想把卡片送給誰？",
-                drawing: "畫出一張謝謝卡",
-                task: "今天向一個人說謝謝。"
+                "key": "market",
+                "label": "市場買菜",
+                "topic": "觀察",
+                "subtitle": "SEL主題：社會覺察｜觀察",
+                "story": "星期六，我和爸爸去市場。菜攤上有青菜、豆腐和蘋果。我幫爸爸數一數袋子。",
+                "practice": "市場、青菜、蘋果、水果",
+                "question": "菜攤上有哪一樣東西？",
+                "drawing": "畫出市場裡的一樣食物",
+                "task": "今天說出一種你吃到的食物。",
+                "selCategory": "social_awareness"
           },
           {
-                key: "proud_shoes",
-                label: "自己穿鞋很得意",
-                topic: "得意",
-                subtitle: "SEL主題：情緒辨識",
-                story: "早上出門前，我自己把鞋穿好。爸爸看到了，對我比一個讚。我挺起胸口，覺得自己很得意。",
-                practice: "穿鞋、得意、讚美",
-                question: "孩子為什麼覺得得意？",
-                drawing: "畫出得意時的樣子",
-                task: "今天說出自己做得好的一件事。"
+                "key": "bus",
+                "label": "搭公車",
+                "topic": "規則",
+                "subtitle": "SEL主題：負責任的決策｜規則",
+                "story": "公車來了，我牽著媽媽上車。車上有人在休息，我小聲說話。下車前，我按鈴提醒司機。",
+                "practice": "公車、小聲、按鈴、座位",
+                "question": "孩子在車上為什麼小聲說話？",
+                "drawing": "畫出你搭公車的樣子",
+                "task": "在公共地方，練習小聲說話。",
+                "selCategory": "responsible_decision"
           },
           {
-                key: "sick_friend",
-                label: "同學請假",
-                topic: "關心",
-                subtitle: "SEL主題：關心",
-                story: "今天小安沒有來上學。老師說他感冒了，需要休息。我畫了一張圖，想等他回來送給他。",
-                practice: "請假、感冒、休息",
-                question: "小安為什麼沒有來上學？",
-                drawing: "畫出你想送給朋友的圖",
-                task: "今天關心一位沒有見到的人。"
+                "key": "surprise_card",
+                "label": "收到小卡很驚喜",
+                "topic": "驚喜",
+                "subtitle": "SEL主題：社會覺察｜驚喜",
+                "story": "下課時，同學送我一張小卡。我睜大眼睛，嘴巴也笑開了。我知道這是驚喜，心裡暖暖的。",
+                "practice": "小卡、驚喜、笑開、笑臉",
+                "question": "孩子收到小卡時，臉上有什麼樣子？",
+                "drawing": "畫出驚喜時的表情",
+                "task": "今天觀察一個人的表情。",
+                "selCategory": "social_awareness"
           },
           {
-                key: "smile",
-                label: "一個微笑",
-                topic: "友善",
-                subtitle: "SEL主題：友善",
-                story: "我看到同學一個人坐著。他沒有說話，看起來有點孤單。我走過去，對他笑一笑。",
-                practice: "微笑、友善、孤單",
-                question: "孩子看到同學孤單時做了什麼？",
-                drawing: "畫出一個友善的笑臉",
-                task: "今天給一個人微笑。"
+                "key": "lost_game",
+                "label": "輸了也可以",
+                "topic": "挫折",
+                "subtitle": "SEL主題：自我管理｜挫折",
+                "story": "玩遊戲時，我沒有贏。我心裡悶悶的，但沒有丟玩具。休息一下後，我和同學再玩一次。",
+                "practice": "遊戲、休息、再玩、同伴",
+                "question": "孩子輸了以後沒有做什麼？",
+                "drawing": "畫出你休息一下的樣子",
+                "task": "輸了時，練習深呼吸。",
+                "selCategory": "self_management"
           },
           {
-                key: "noise",
-                label: "聲音太大",
-                topic: "覺察",
-                subtitle: "SEL主題：覺察",
-                story: "我和朋友玩得很開心，聲音越來越大。老師指一指耳朵，提醒我們。於是我把聲音放小一點。",
-                practice: "聲音、耳朵、提醒",
-                question: "老師怎麼提醒孩子？",
-                drawing: "畫出小聲說話的樣子",
-                task: "今天注意自己的音量。"
+                "key": "thank_card",
+                "label": "謝謝卡",
+                "topic": "感謝",
+                "subtitle": "SEL主題：社會覺察｜感謝",
+                "story": "老師今天幫我找回水壺。我想做一張小卡片送給老師。卡片上畫了花，也寫了謝謝。",
+                "practice": "卡片、老師、謝謝、心意",
+                "question": "孩子想把卡片送給誰？",
+                "drawing": "畫出一張謝謝卡",
+                "task": "今天向一個人說謝謝。",
+                "selCategory": "social_awareness"
           },
           {
-                key: "lost_line",
-                label: "找不到隊伍",
-                topic: "解決問題",
-                subtitle: "SEL主題：解決問題",
-                story: "戶外教學時，我一時找不到隊伍。我停在原地，沒有亂跑。老師看到我，就帶我回到同學旁邊。",
-                practice: "隊伍、原地、老師",
-                question: "孩子找不到隊伍時，先怎麼做？",
-                drawing: "畫出安全等待老師",
-                task: "找不到人時，先停在安全地方。"
+                "key": "proud_shoes",
+                "label": "自己穿鞋很得意",
+                "topic": "得意",
+                "subtitle": "SEL主題：自我覺察｜得意",
+                "story": "早上出門前，我自己把鞋穿好。爸爸看到了，對我比一個讚。我挺起胸口，覺得自己很得意。",
+                "practice": "穿鞋、得意、讚美、鞋帶",
+                "question": "孩子為什麼覺得得意？",
+                "drawing": "畫出得意時的樣子",
+                "task": "今天說出自己做得好的一件事。",
+                "selCategory": "self_awareness"
+          },
+          {
+                "key": "sick_friend",
+                "label": "同學請假",
+                "topic": "關心",
+                "subtitle": "SEL主題：社會覺察｜關心",
+                "story": "今天小安沒有來上學。老師說他感冒了，需要休息。我畫了一張圖，想等他回來送給他。",
+                "practice": "請假、感冒、休息、同學",
+                "question": "小安為什麼沒有來上學？",
+                "drawing": "畫出你想送給朋友的圖",
+                "task": "今天關心一位沒有見到的人。",
+                "selCategory": "social_awareness"
+          },
+          {
+                "key": "smile",
+                "label": "一個微笑",
+                "topic": "友善",
+                "subtitle": "SEL主題：社會覺察｜友善",
+                "story": "我看到同學一個人坐著。他沒有說話，看起來有點孤單。我走過去，對他笑一笑。",
+                "practice": "微笑、友善、孤單、朋友",
+                "question": "孩子看到同學孤單時做了什麼？",
+                "drawing": "畫出一個友善的笑臉",
+                "task": "今天給一個人微笑。",
+                "selCategory": "social_awareness"
+          },
+          {
+                "key": "noise",
+                "label": "聲音太大",
+                "topic": "覺察",
+                "subtitle": "SEL主題：負責任的決策｜覺察",
+                "story": "我和朋友玩得很開心，聲音越來越大。老師指一指耳朵，提醒我們。於是我把聲音放小一點。",
+                "practice": "聲音、耳朵、提醒、音量",
+                "question": "老師怎麼提醒孩子？",
+                "drawing": "畫出小聲說話的樣子",
+                "task": "今天注意自己的音量。",
+                "selCategory": "responsible_decision"
+          },
+          {
+                "key": "lost_line",
+                "label": "找不到隊伍",
+                "topic": "解決問題",
+                "subtitle": "SEL主題：負責任的決策｜解決問題",
+                "story": "戶外教學時，我一時找不到隊伍。我停在原地，沒有亂跑。老師看到我，就帶我回到同學旁邊。",
+                "practice": "隊伍、原地、老師、操場",
+                "question": "孩子找不到隊伍時，先怎麼做？",
+                "drawing": "畫出安全等待老師",
+                "task": "找不到人時，先停在安全地方。",
+                "selCategory": "responsible_decision"
+          },
+          {
+                "key": "sel_awareness_red_face",
+                "label": "臉紅的時候",
+                "topic": "情緒",
+                "selCategory": "self_awareness",
+                "story": "早上點名時，我的臉紅紅的。我有一點不好意思。老師說，知道自己的感覺很重要。",
+                "practice": "早上、臉紅、老師、感覺",
+                "question": "孩子的臉為什麼紅紅的？",
+                "drawing": "畫出你不好意思時的樣子",
+                "task": "今天說出自己一個小感覺。",
+                "subtitle": "SEL主題：自我覺察｜情緒"
+          },
+          {
+                "key": "sel_awareness_fast_heart",
+                "label": "心跳變快",
+                "topic": "緊張",
+                "selCategory": "self_awareness",
+                "story": "上台說話時，我的心跳變快。我摸摸胸口，知道自己有點緊張。我看著老師，慢慢說一句話。",
+                "practice": "上台、心跳、胸口、老師",
+                "question": "孩子怎麼知道自己緊張？",
+                "drawing": "畫出你緊張時的身體感覺",
+                "task": "緊張時，先摸摸自己的胸口。",
+                "subtitle": "SEL主題：自我覺察｜緊張"
+          },
+          {
+                "key": "sel_awareness_like_drawing",
+                "label": "我喜歡畫圖",
+                "topic": "喜好",
+                "selCategory": "self_awareness",
+                "story": "美勞課時，我喜歡畫大大的太陽。同學喜歡畫小花。我知道每個人喜歡的東西不一樣。",
+                "practice": "美勞、太陽、同學、小花",
+                "question": "孩子喜歡畫什麼？",
+                "drawing": "畫出你喜歡的一樣東西",
+                "task": "今天說出自己喜歡的一件事。",
+                "subtitle": "SEL主題：自我覺察｜喜好"
+          },
+          {
+                "key": "sel_awareness_proud_helper",
+                "label": "我做到了",
+                "topic": "自信",
+                "selCategory": "self_awareness",
+                "story": "我把桌子擦乾淨。老師說我很用心。我心裡亮亮的，知道自己做到了。",
+                "practice": "桌子、老師、心裡、用心",
+                "question": "孩子做到了什麼事？",
+                "drawing": "畫出你做成功的一件小事",
+                "task": "今天告訴家人你做到的一件事。",
+                "subtitle": "SEL主題：自我覺察｜自信"
+          },
+          {
+                "key": "sel_awareness_angry_face",
+                "label": "眉毛皺起來",
+                "topic": "生氣",
+                "selCategory": "self_awareness",
+                "story": "玩具被拿走時，我的眉毛皺起來。我知道自己有點生氣。我先停一下，再說我想玩。",
+                "practice": "玩具、眉毛、生氣、同學",
+                "question": "孩子怎麼知道自己生氣？",
+                "drawing": "畫出生氣時的表情",
+                "task": "生氣時，先說出自己的感覺。",
+                "subtitle": "SEL主題：自我覺察｜生氣"
+          },
+          {
+                "key": "sel_awareness_quiet_body",
+                "label": "身體想休息",
+                "topic": "身體",
+                "selCategory": "self_awareness",
+                "story": "跑完操場後，我的腳有點酸。我喝水，也坐下休息。我知道身體在告訴我需要休息。",
+                "practice": "操場、喝水、身體、休息",
+                "question": "孩子的身體怎麼了？",
+                "drawing": "畫出你休息的地方",
+                "task": "今天注意自己累不累。",
+                "subtitle": "SEL主題：自我覺察｜身體"
+          },
+          {
+                "key": "sel_awareness_good_at_blocks",
+                "label": "我會搭積木",
+                "topic": "優點",
+                "selCategory": "self_awareness",
+                "story": "積木倒下來時，我又搭一次。朋友說我的高塔很穩。我發現自己很會慢慢做。",
+                "practice": "積木、高塔、朋友、優點",
+                "question": "孩子發現自己會做什麼？",
+                "drawing": "畫出你會做的一件事",
+                "task": "今天說出自己一個小優點。",
+                "subtitle": "SEL主題：自我覺察｜優點"
+          },
+          {
+                "key": "sel_awareness_need_help",
+                "label": "我需要幫忙",
+                "topic": "需要",
+                "selCategory": "self_awareness",
+                "story": "我找不到黃色蠟筆。我找了抽屜和桌子，還是沒有找到。我知道自己需要請老師幫忙。",
+                "practice": "蠟筆、抽屜、桌子、老師",
+                "question": "孩子需要誰幫忙？",
+                "drawing": "畫出你找東西的地方",
+                "task": "需要幫忙時，練習開口說。",
+                "subtitle": "SEL主題：自我覺察｜需要"
+          },
+          {
+                "key": "sel_awareness_favorite_food",
+                "label": "我喜歡的菜",
+                "topic": "價值",
+                "selCategory": "self_awareness",
+                "story": "午餐有青菜和蘋果。我喜歡蘋果，也願意吃一口青菜。我知道照顧身體很重要。",
+                "practice": "午餐、青菜、蘋果、身體",
+                "question": "孩子為什麼願意吃青菜？",
+                "drawing": "畫出一樣你願意試試看的食物",
+                "task": "今天吃飯時，注意身體需要什麼。",
+                "subtitle": "SEL主題：自我覺察｜價值"
+          },
+          {
+                "key": "sel_awareness_safe_place",
+                "label": "讓我安心的地方",
+                "topic": "安心",
+                "selCategory": "self_awareness",
+                "story": "下課聲音很大，我走到安靜角。我抱著抱枕，心裡慢慢安靜。我知道這裡讓我安心。",
+                "practice": "下課、安靜、抱枕、心裡",
+                "question": "哪裡讓孩子安心？",
+                "drawing": "畫出讓你安心的地方",
+                "task": "今天找一個讓你安心的小地方。",
+                "subtitle": "SEL主題：自我覺察｜安心"
+          },
+          {
+                "key": "sel_manage_three_breaths",
+                "label": "三次呼吸",
+                "topic": "冷靜",
+                "selCategory": "self_management",
+                "story": "我排隊等洗手時，有一點急。我把手放在肚子上，慢慢呼吸三次。輪到我時，我已經比較安靜。",
+                "practice": "排隊、洗手、肚子、呼吸",
+                "question": "孩子等的時候做了什麼？",
+                "drawing": "畫出你慢慢呼吸的樣子",
+                "task": "今天練習慢慢呼吸三次。",
+                "subtitle": "SEL主題：自我管理｜冷靜"
+          },
+          {
+                "key": "sel_manage_small_goal",
+                "label": "先寫一行",
+                "topic": "目標",
+                "selCategory": "self_management",
+                "story": "功課看起來有一點多。我先寫一行，再休息一下。我一步一步完成了。",
+                "practice": "功課、鉛筆、桌子、目標",
+                "question": "孩子先做哪一件事？",
+                "drawing": "畫出你完成一小步的樣子",
+                "task": "今天把一件事分成小步驟。",
+                "subtitle": "SEL主題：自我管理｜目標"
+          },
+          {
+                "key": "sel_manage_clean_bag",
+                "label": "書包小檢查",
+                "topic": "整理",
+                "selCategory": "self_management",
+                "story": "睡覺前，我打開書包看一看。我把水壺和聯絡簿放好。明天上學，我會比較安心。",
+                "practice": "書包、水壺、聯絡簿、明天",
+                "question": "孩子睡前檢查什麼？",
+                "drawing": "畫出整理好的書包",
+                "task": "睡前檢查一樣明天要帶的東西。",
+                "subtitle": "SEL主題：自我管理｜整理"
+          },
+          {
+                "key": "sel_manage_wait_turn",
+                "label": "輪到我再玩",
+                "topic": "等待",
+                "selCategory": "self_management",
+                "story": "遊戲角有很多同學。我想玩積木，可是還沒輪到我。我先看書，等一下再玩。",
+                "practice": "遊戲、同學、積木、書本",
+                "question": "孩子等的時候先做什麼？",
+                "drawing": "畫出你等一等的樣子",
+                "task": "今天等一件事時，找一件安靜的事做。",
+                "subtitle": "SEL主題：自我管理｜等待"
+          },
+          {
+                "key": "sel_manage_lost_pencil",
+                "label": "鉛筆不見了",
+                "topic": "解決",
+                "selCategory": "self_management",
+                "story": "我的鉛筆不見了。我先看桌上，再看鉛筆盒。找不到時，我向老師借一枝。",
+                "practice": "鉛筆、桌上、筆盒、老師",
+                "question": "孩子先找了哪些地方？",
+                "drawing": "畫出你的鉛筆盒",
+                "task": "找不到東西時，先找三個地方。",
+                "subtitle": "SEL主題：自我管理｜解決"
+          },
+          {
+                "key": "sel_manage_raincoat",
+                "label": "雨衣放好",
+                "topic": "自理",
+                "selCategory": "self_management",
+                "story": "雨停了，我把雨衣抖一抖。我把雨衣掛在固定的地方。下次下雨時，我找得到它。",
+                "practice": "雨衣、小雨、地方、下次",
+                "question": "孩子把雨衣放在哪裡？",
+                "drawing": "畫出雨衣放好的地方",
+                "task": "今天把一樣物品放回固定位置。",
+                "subtitle": "SEL主題：自我管理｜自理"
+          },
+          {
+                "key": "sel_manage_voice",
+                "label": "小聲說話",
+                "topic": "音量",
+                "selCategory": "self_management",
+                "story": "搭公車時，我想跟媽媽說話。媽媽指指旁邊的人。我把聲音放小，大家都能休息。",
+                "practice": "公車、媽媽、聲音、休息",
+                "question": "孩子為什麼要小聲？",
+                "drawing": "畫出在公車上小聲說話",
+                "task": "今天注意自己的音量。",
+                "subtitle": "SEL主題：自我管理｜音量"
+          },
+          {
+                "key": "sel_manage_try_card",
+                "label": "卡片再做一次",
+                "topic": "挫折",
+                "selCategory": "self_management",
+                "story": "我的卡片貼歪了，我有點失望。我拿起新的色紙，再做一次。第二次，我貼得更慢。",
+                "practice": "卡片、色紙、失望、第二次",
+                "question": "孩子失望後做了什麼？",
+                "drawing": "畫出你再試一次的作品",
+                "task": "今天做錯時，試著再做一次。",
+                "subtitle": "SEL主題：自我管理｜挫折"
+          },
+          {
+                "key": "sel_manage_bell",
+                "label": "聽到鐘聲",
+                "topic": "規則",
+                "selCategory": "self_management",
+                "story": "下課鐘聲響了，我還想玩。我看見同學排隊回教室。我收好球，跟著隊伍走。",
+                "practice": "下課、同學、教室、隊伍",
+                "question": "孩子聽到鐘聲後做什麼？",
+                "drawing": "畫出排隊回教室",
+                "task": "今天聽到提醒時，練習停下來。",
+                "subtitle": "SEL主題：自我管理｜規則"
+          },
+          {
+                "key": "sel_manage_slow_steps",
+                "label": "慢慢走",
+                "topic": "安全",
+                "selCategory": "self_management",
+                "story": "走廊有一點濕。我本來想快快跑。老師提醒我，我就慢慢走。",
+                "practice": "走廊、老師、提醒、腳步",
+                "question": "孩子為什麼慢慢走？",
+                "drawing": "畫出慢慢走的腳步",
+                "task": "今天在走廊練習慢慢走。",
+                "subtitle": "SEL主題：自我管理｜安全"
+          },
+          {
+                "key": "sel_social_friend_sad",
+                "label": "朋友低著頭",
+                "topic": "同理",
+                "selCategory": "social_awareness",
+                "story": "同學下課時低著頭。我看見他沒有說話。我走過去，問他要不要一起坐一下。",
+                "practice": "同學、下課、朋友、椅子",
+                "question": "孩子看到同學怎麼了？",
+                "drawing": "畫出關心朋友的樣子",
+                "task": "今天觀察一個人的表情。",
+                "subtitle": "SEL主題：社會覺察｜同理"
+          },
+          {
+                "key": "sel_social_different_lunch",
+                "label": "不一樣的午餐",
+                "topic": "多元",
+                "selCategory": "social_awareness",
+                "story": "同學的便當和我的不一樣。他說家裡常吃這個菜。我聽他說，也覺得很有趣。",
+                "practice": "便當、同學、青菜、家人",
+                "question": "孩子發現什麼不一樣？",
+                "drawing": "畫出一個不一樣的便當",
+                "task": "今天聽別人說一件家裡的事。",
+                "subtitle": "SEL主題：社會覺察｜多元"
+          },
+          {
+                "key": "sel_social_grandma_slow",
+                "label": "阿嬤慢慢走",
+                "topic": "關心",
+                "selCategory": "social_awareness",
+                "story": "阿嬤走路比較慢。我沒有催她。我牽著她的手，一起慢慢走。",
+                "practice": "阿嬤、走路、手心、家人",
+                "question": "孩子怎麼陪阿嬤？",
+                "drawing": "畫出牽手慢慢走",
+                "task": "今天關心一位家人的需要。",
+                "subtitle": "SEL主題：社會覺察｜關心"
+          },
+          {
+                "key": "sel_social_new_voice",
+                "label": "新同學的聲音",
+                "topic": "包容",
+                "selCategory": "social_awareness",
+                "story": "新同學說話很小聲。我沒有笑他。我把耳朵靠近一點，聽他說完。",
+                "practice": "新同學、聲音、耳朵、座位",
+                "question": "孩子怎麼聽新同學說話？",
+                "drawing": "畫出用心聽人說話",
+                "task": "今天聽一個人把話說完。",
+                "subtitle": "SEL主題：社會覺察｜包容"
+          },
+          {
+                "key": "sel_social_market_helper",
+                "label": "市場裡的人",
+                "topic": "感謝",
+                "selCategory": "social_awareness",
+                "story": "市場裡，阿姨把青菜放進袋子。媽媽說每個工作都辛苦。我對阿姨說謝謝。",
+                "practice": "市場、青菜、阿姨、袋子",
+                "question": "孩子謝謝誰？",
+                "drawing": "畫出市場裡幫忙的人",
+                "task": "今天向一位幫忙的人說謝謝。",
+                "subtitle": "SEL主題：社會覺察｜感謝"
+          },
+          {
+                "key": "sel_social_little_brother",
+                "label": "弟弟哭了",
+                "topic": "同理",
+                "selCategory": "social_awareness",
+                "story": "弟弟的積木倒了，他哭了。我想起自己也會難過。我坐在旁邊，陪他再搭一次。",
+                "practice": "弟弟、積木、眼淚、旁邊",
+                "question": "孩子為什麼陪弟弟？",
+                "drawing": "畫出陪伴家人的樣子",
+                "task": "今天想一想別人的心情。",
+                "subtitle": "SEL主題：社會覺察｜同理"
+          },
+          {
+                "key": "sel_social_many_colors",
+                "label": "大家的顏色",
+                "topic": "多元",
+                "selCategory": "social_awareness",
+                "story": "畫圖時，我用黃色。同學用藍色和紅色。老師說，每一張圖都有自己的樣子。",
+                "practice": "畫圖、黃色、藍色、紅色",
+                "question": "大家用的顏色一樣嗎？",
+                "drawing": "畫出三種不同顏色",
+                "task": "今天欣賞別人的作品。",
+                "subtitle": "SEL主題：社會覺察｜多元"
+          },
+          {
+                "key": "sel_social_bus_seat",
+                "label": "公車座位",
+                "topic": "觀察",
+                "selCategory": "social_awareness",
+                "story": "公車上，爺爺站得有點累。爸爸看見了，請我坐到旁邊。我知道有人比我更需要座位。",
+                "practice": "公車、爺爺、爸爸、座位",
+                "question": "誰比較需要座位？",
+                "drawing": "畫出公車上的座位",
+                "task": "今天注意身邊誰需要幫忙。",
+                "subtitle": "SEL主題：社會覺察｜觀察"
+          },
+          {
+                "key": "sel_social_class_job",
+                "label": "大家的工作",
+                "topic": "合作",
+                "selCategory": "social_awareness",
+                "story": "值日生擦黑板，另一位同學排桌子。我負責撿紙屑。大家做不一樣的事，教室變乾淨。",
+                "practice": "值日、黑板、桌子、教室",
+                "question": "大家做的工作一樣嗎？",
+                "drawing": "畫出班上的一件工作",
+                "task": "今天看見別人做的一件好事。",
+                "subtitle": "SEL主題：社會覺察｜合作"
+          },
+          {
+                "key": "sel_social_sick_card",
+                "label": "給請假的同學",
+                "topic": "關心",
+                "selCategory": "social_awareness",
+                "story": "同學感冒請假了。我和朋友畫一張小卡。老師說，關心可以讓人心裡暖暖的。",
+                "practice": "感冒、小卡、朋友、老師",
+                "question": "孩子畫小卡給誰？",
+                "drawing": "畫出一張關心小卡",
+                "task": "今天關心一位沒有見到的人。",
+                "subtitle": "SEL主題：社會覺察｜關心"
+          },
+          {
+                "key": "sel_relation_share_crayons",
+                "label": "一起用蠟筆",
+                "topic": "分享",
+                "selCategory": "relationship_skills",
+                "story": "我有黃色蠟筆，同學沒有。我問他要不要一起用。他說謝謝，我們一起畫太陽。",
+                "practice": "蠟筆、同學、太陽、謝謝",
+                "question": "孩子把什麼借給同學？",
+                "drawing": "畫出一起用蠟筆",
+                "task": "今天和一個人分享一樣東西。",
+                "subtitle": "SEL主題：人際技巧｜分享"
+          },
+          {
+                "key": "sel_relation_clear_words",
+                "label": "把話說清楚",
+                "topic": "溝通",
+                "selCategory": "relationship_skills",
+                "story": "我想玩球，可是同學不知道。我走近一點，說我想輪流玩。他點點頭，讓我等下一次。",
+                "practice": "玩球、同學、輪流、下一次",
+                "question": "孩子怎麼把話說清楚？",
+                "drawing": "畫出和同學說話",
+                "task": "今天用一句清楚的話說出需要。",
+                "subtitle": "SEL主題：人際技巧｜溝通"
+          },
+          {
+                "key": "sel_relation_listen_story",
+                "label": "聽完再說",
+                "topic": "聆聽",
+                "selCategory": "relationship_skills",
+                "story": "同學說他的圖畫故事。我很想說自己的事。可是我先聽他說完，再說我也喜歡那朵花。",
+                "practice": "同學、圖畫、故事、小花",
+                "question": "孩子先做什麼？",
+                "drawing": "畫出聽朋友說故事",
+                "task": "今天等別人說完再開口。",
+                "subtitle": "SEL主題：人際技巧｜聆聽"
+          },
+          {
+                "key": "sel_relation_invite_play",
+                "label": "邀請一起玩",
+                "topic": "友善",
+                "selCategory": "relationship_skills",
+                "story": "我看見同學一個人坐著。我拿著積木問他要不要一起玩。他笑了，和我一起搭房子。",
+                "practice": "同學、積木、房子、笑臉",
+                "question": "孩子邀請同學做什麼？",
+                "drawing": "畫出邀請朋友一起玩",
+                "task": "今天對一個人說友善的話。",
+                "subtitle": "SEL主題：人際技巧｜友善"
+          },
+          {
+                "key": "sel_relation_sorry_toy",
+                "label": "玩具掉了",
+                "topic": "道歉",
+                "selCategory": "relationship_skills",
+                "story": "我不小心把同學的玩具碰掉了。我撿起來，說對不起。同學說沒關係，我們又一起玩。",
+                "practice": "玩具、同學、對不起、一起",
+                "question": "孩子說了什麼話？",
+                "drawing": "畫出道歉後一起玩",
+                "task": "不小心做錯時，練習說對不起。",
+                "subtitle": "SEL主題：人際技巧｜道歉"
+          },
+          {
+                "key": "sel_relation_thank_lunch",
+                "label": "謝謝午餐阿姨",
+                "topic": "感謝",
+                "selCategory": "relationship_skills",
+                "story": "午餐阿姨幫我盛湯。我雙手拿好湯碗。我看著阿姨說謝謝。",
+                "practice": "午餐、阿姨、湯碗、雙手",
+                "question": "孩子向誰說謝謝？",
+                "drawing": "畫出拿湯碗的樣子",
+                "task": "今天向一位幫忙的人說謝謝。",
+                "subtitle": "SEL主題：人際技巧｜感謝"
+          },
+          {
+                "key": "sel_relation_team_tower",
+                "label": "一起搭高塔",
+                "topic": "合作",
+                "selCategory": "relationship_skills",
+                "story": "我拿長積木，同學拿短積木。我們一個一個往上放。高塔完成時，大家都拍手。",
+                "practice": "積木、同學、高塔、拍手",
+                "question": "孩子和同學一起完成什麼？",
+                "drawing": "畫出一起搭好的高塔",
+                "task": "今天和一個人一起完成小事。",
+                "subtitle": "SEL主題：人際技巧｜合作"
+          },
+          {
+                "key": "sel_relation_use_kind_words",
+                "label": "好好說",
+                "topic": "溝通",
+                "selCategory": "relationship_skills",
+                "story": "同學擋到我的路。我沒有推他。我說，請你讓我過一下。",
+                "practice": "同學、小路、請你、一下",
+                "question": "孩子怎麼好好說？",
+                "drawing": "畫出有禮貌說話",
+                "task": "今天用請和謝謝說話。",
+                "subtitle": "SEL主題：人際技巧｜溝通"
+          },
+          {
+                "key": "sel_relation_help_find",
+                "label": "一起找書包",
+                "topic": "幫忙",
+                "selCategory": "relationship_skills",
+                "story": "同學找不到書包。他看起來很著急。我陪他看椅子旁邊和教室後面。",
+                "practice": "書包、椅子、教室、同學",
+                "question": "孩子陪同學找什麼？",
+                "drawing": "畫出一起找東西",
+                "task": "今天幫一個人找或拿一樣東西。",
+                "subtitle": "SEL主題：人際技巧｜幫忙"
+          },
+          {
+                "key": "sel_relation_game_rule",
+                "label": "說好遊戲規則",
+                "topic": "合作",
+                "selCategory": "relationship_skills",
+                "story": "玩遊戲前，我們先說好規則。每個人玩一次，再換下一個人。大家都知道怎麼玩。",
+                "practice": "遊戲、規則、大家、下一個",
+                "question": "孩子們玩遊戲前先說什麼？",
+                "drawing": "畫出一起玩遊戲",
+                "task": "今天玩遊戲前，先說好規則。",
+                "subtitle": "SEL主題：人際技巧｜合作"
+          },
+          {
+                "key": "sel_decision_pick_litter",
+                "label": "地上的紙屑",
+                "topic": "選擇",
+                "selCategory": "responsible_decision",
+                "story": "走廊地上有紙屑。我可以走過去，也可以撿起來。我把紙屑放進垃圾桶，走廊變乾淨。",
+                "practice": "走廊、紙屑、垃圾桶、乾淨",
+                "question": "孩子做了哪一個選擇？",
+                "drawing": "畫出把紙屑丟好",
+                "task": "今天看見垃圾時，放進垃圾桶。",
+                "subtitle": "SEL主題：負責任的決策｜選擇"
+          },
+          {
+                "key": "sel_decision_red_light",
+                "label": "紅燈前停下來",
+                "topic": "安全",
+                "selCategory": "responsible_decision",
+                "story": "過馬路時，紅燈亮了。我很想快點到對面。爸爸牽著我，我們停下來等綠燈。",
+                "practice": "馬路、紅燈、爸爸、綠燈",
+                "question": "孩子為什麼停下來？",
+                "drawing": "畫出等綠燈的樣子",
+                "task": "過馬路時，先看燈號。",
+                "subtitle": "SEL主題：負責任的決策｜安全"
+          },
+          {
+                "key": "sel_decision_use_water",
+                "label": "水龍頭關好",
+                "topic": "負責",
+                "selCategory": "responsible_decision",
+                "story": "洗手後，水龍頭還在滴水。我聽見滴答滴答的聲音。我把水龍頭關緊，水就停了。",
+                "practice": "洗手、水龍頭、聲音、滴水",
+                "question": "孩子把什麼關好？",
+                "drawing": "畫出關水龍頭",
+                "task": "今天用完水後，記得關好。",
+                "subtitle": "SEL主題：負責任的決策｜負責"
+          },
+          {
+                "key": "sel_decision_borrow_book",
+                "label": "借書要愛惜",
+                "topic": "負責",
+                "selCategory": "responsible_decision",
+                "story": "我從圖書角借一本書。我翻書時手很輕。我想讓下一位同學也能看乾淨的書。",
+                "practice": "圖書、書本、同學、乾淨",
+                "question": "孩子為什麼輕輕翻書？",
+                "drawing": "畫出愛惜書本",
+                "task": "今天輕輕使用一本書。",
+                "subtitle": "SEL主題：負責任的決策｜負責"
+          },
+          {
+                "key": "sel_decision_snack_choice",
+                "label": "點心的選擇",
+                "topic": "選擇",
+                "selCategory": "responsible_decision",
+                "story": "桌上有點心，也有水壺。我很想一直吃餅乾。媽媽說先喝水，我選擇喝幾口水。",
+                "practice": "點心、水壺、餅乾、媽媽",
+                "question": "孩子先選擇做什麼？",
+                "drawing": "畫出喝水和點心",
+                "task": "今天吃點心前，先喝一口水。",
+                "subtitle": "SEL主題：負責任的決策｜選擇"
+          },
+          {
+                "key": "sel_decision_class_tool",
+                "label": "用完放回去",
+                "topic": "負責",
+                "selCategory": "responsible_decision",
+                "story": "我用完剪刀和膠水。它們如果亂放，別人會找不到。我把它們放回工具盒。",
+                "practice": "剪刀、膠水、工具盒、同學",
+                "question": "孩子把工具放回哪裡？",
+                "drawing": "畫出工具盒",
+                "task": "今天用完東西，放回原位。",
+                "subtitle": "SEL主題：負責任的決策｜負責"
+          },
+          {
+                "key": "sel_decision_safe_ball",
+                "label": "球滾到路邊",
+                "topic": "安全",
+                "selCategory": "responsible_decision",
+                "story": "球滾到路邊。我想馬上跑去撿。老師叫我停下來，我等大人一起去。",
+                "practice": "球、路邊、老師、大人",
+                "question": "孩子為什麼先停下來？",
+                "drawing": "畫出安全撿球",
+                "task": "東西跑到危險地方時，先找大人。",
+                "subtitle": "SEL主題：負責任的決策｜安全"
+          },
+          {
+                "key": "sel_decision_tell_teacher",
+                "label": "看到水灑了",
+                "topic": "判斷",
+                "selCategory": "responsible_decision",
+                "story": "教室地上有水。我知道有人可能會滑倒。我告訴老師，也拿抹布來擦。",
+                "practice": "教室、地上、老師、抹布",
+                "question": "孩子看到水灑了怎麼辦？",
+                "drawing": "畫出把地板擦乾",
+                "task": "看到危險時，告訴大人。",
+                "subtitle": "SEL主題：負責任的決策｜判斷"
+          },
+          {
+                "key": "sel_decision_truth",
+                "label": "說出實話",
+                "topic": "誠實",
+                "selCategory": "responsible_decision",
+                "story": "我不小心把蠟筆折斷了。我有點害怕。可是我告訴老師實話，老師陪我想辦法。",
+                "practice": "蠟筆、老師、實話、辦法",
+                "question": "孩子最後告訴老師什麼？",
+                "drawing": "畫出說實話的樣子",
+                "task": "做錯事時，練習說實話。",
+                "subtitle": "SEL主題：負責任的決策｜誠實"
+          },
+          {
+                "key": "sel_decision_group_clean",
+                "label": "大家的教室",
+                "topic": "群體",
+                "selCategory": "responsible_decision",
+                "story": "放學前，教室有點亂。我想快點回家。可是我先把椅子推好，讓明天的教室更整齊。",
+                "practice": "放學、教室、椅子、明天",
+                "question": "孩子為班上做了什麼？",
+                "drawing": "畫出整齊的教室",
+                "task": "今天為大家做一件小事。",
+                "subtitle": "SEL主題：負責任的決策｜群體"
           }
     ];
 
@@ -1610,6 +2282,129 @@
           務: "ㄨˋ"
     });
 
+    Object.assign(baseRuby, {
+      "些": "ㄒㄧㄝ",
+      "使": "ㄕˇ",
+      "便": "ㄅㄧㄢˋ",
+      "係": "ㄒㄧˋ",
+      "信": "ㄒㄧㄣˋ",
+      "候": "ㄏㄡˋ",
+      "催": "ㄘㄨㄟ",
+      "價": "ㄐㄧㄚˋ",
+      "優": "ㄧㄡ",
+      "元": "ㄩㄢˊ",
+      "共": "ㄍㄨㄥˋ",
+      "冷": "ㄌㄥˇ",
+      "刀": "ㄉㄠ",
+      "判": "ㄆㄢˋ",
+      "剪": "ㄐㄧㄢˇ",
+      "功": "ㄍㄨㄥ",
+      "動": "ㄉㄨㄥˋ",
+      "危": "ㄨㄟˊ",
+      "又": "ㄧㄡˋ",
+      "句": "ㄐㄩˋ",
+      "另": "ㄌㄧㄥˋ",
+      "名": "ㄇㄧㄥˊ",
+      "向": "ㄒㄧㄤˋ",
+      "嗎": "ㄇㄚ˙",
+      "固": "ㄍㄨˋ",
+      "圾": "ㄙㄜˋ",
+      "垃": "ㄌㄜˋ",
+      "墊": "ㄉㄧㄢˋ",
+      "套": "ㄊㄠˋ",
+      "如": "ㄖㄨˊ",
+      "定": "ㄉㄧㄥˋ",
+      "容": "ㄖㄨㄥˊ",
+      "屜": "ㄊㄧˋ",
+      "工": "ㄍㄨㄥ",
+      "巧": "ㄑㄧㄠˇ",
+      "已": "ㄧˇ",
+      "常": "ㄔㄤˊ",
+      "幾": "ㄐㄧˇ",
+      "廊": "ㄌㄤˊ",
+      "弟": "ㄉㄧˋ",
+      "往": "ㄨㄤˇ",
+      "從": "ㄘㄨㄥˊ",
+      "思": "ㄙ",
+      "惜": "ㄒㄧ",
+      "愛": "ㄞˋ",
+      "或": "ㄏㄨㄛˋ",
+      "扶": "ㄈㄨˊ",
+      "技": "ㄐㄧˋ",
+      "抽": "ㄔㄡ",
+      "拍": "ㄆㄞ",
+      "掛": "ㄍㄨㄚˋ",
+      "撿": "ㄐㄧㄢˇ",
+      "擇": "ㄗㄜˊ",
+      "擋": "ㄉㄤˇ",
+      "斷": "ㄉㄨㄢˋ",
+      "板": "ㄅㄢˇ",
+      "枝": "ㄓ",
+      "架": "ㄐㄧㄚˋ",
+      "查": "ㄔㄚˊ",
+      "桶": "ㄊㄨㄥˇ",
+      "楚": "ㄔㄨˇ",
+      "標": "ㄅㄧㄠ",
+      "檢": "ㄐㄧㄢˇ",
+      "欣": "ㄒㄧㄣ",
+      "段": "ㄉㄨㄢˋ",
+      "毛": "ㄇㄠˊ",
+      "沙": "ㄕㄚ",
+      "法": "ㄈㄚˇ",
+      "深": "ㄕㄣ",
+      "清": "ㄑㄧㄥ",
+      "湯": "ㄊㄤ",
+      "溝": "ㄍㄡ",
+      "滑": "ㄏㄨㄚˊ",
+      "滴": "ㄉㄧ",
+      "滾": "ㄍㄨㄣˇ",
+      "濕": "ㄕ",
+      "灑": "ㄙㄚˇ",
+      "爺": "ㄧㄝˊ",
+      "短": "ㄉㄨㄢˇ",
+      "碗": "ㄨㄢˇ",
+      "碰": "ㄆㄥˋ",
+      "社": "ㄕㄜˋ",
+      "穩": "ㄨㄣˇ",
+      "第": "ㄉㄧˋ",
+      "答": "ㄉㄚ",
+      "策": "ㄘㄜˋ",
+      "管": "ㄍㄨㄢˇ",
+      "箱": "ㄒㄧㄤ",
+      "級": "ㄐㄧˊ",
+      "累": "ㄌㄟˋ",
+      "經": "ㄐㄧㄥ",
+      "置": "ㄓˋ",
+      "群": "ㄑㄩㄣˊ",
+      "膠": "ㄐㄧㄠ",
+      "苦": "ㄎㄨˇ",
+      "號": "ㄏㄠˋ",
+      "記": "ㄐㄧˋ",
+      "誠": "ㄔㄥˊ",
+      "賞": "ㄕㄤˇ",
+      "趣": "ㄑㄩˋ",
+      "辛": "ㄒㄧㄣ",
+      "辦": "ㄅㄢˋ",
+      "近": "ㄐㄧㄣˋ",
+      "通": "ㄊㄨㄥ",
+      "遇": "ㄩˋ",
+      "選": "ㄒㄩㄢˇ",
+      "邀": "ㄧㄠ",
+      "酸": "ㄙㄨㄢ",
+      "量": "ㄌㄧㄤˋ",
+      "錯": "ㄘㄨㄛˋ",
+      "鐘": "ㄓㄨㄥ",
+      "陽": "ㄧㄤˊ",
+      "際": "ㄐㄧˋ",
+      "險": "ㄒㄧㄢˇ",
+      "露": "ㄌㄡˋ",
+      "響": "ㄒㄧㄤˇ",
+      "頁": "ㄧㄝˋ",
+      "驟": "ㄗㄡˋ",
+      "黑": "ㄏㄟ",
+      "龍": "ㄌㄨㄥˊ"
+    });
+
     const state = {
       active: sheets[0],
       ruby: { ...baseRuby }
@@ -1634,11 +2429,18 @@
 
     function fillThemeOptions() {
       themeSelect.innerHTML = "";
-      sheets.forEach((sheet) => {
-        const option = document.createElement("option");
-        option.value = sheet.key;
-        option.textContent = `${sheet.label}｜${sheet.topic}`;
-        themeSelect.appendChild(option);
+      selCategories.forEach((category) => {
+        const group = document.createElement("optgroup");
+        group.label = category.label;
+        sheets
+          .filter((sheet) => sheet.selCategory === category.key)
+          .forEach((sheet) => {
+            const option = document.createElement("option");
+            option.value = sheet.key;
+            option.textContent = `${sheet.label}｜${sheet.topic}`;
+            group.appendChild(option);
+          });
+        themeSelect.appendChild(group);
       });
     }
 
@@ -1714,32 +2516,22 @@
       return terms;
     }
 
-    function completePracticeTerms(terms) {
+    function completePracticeTerms(terms, fallbackTerms = []) {
       const result = [];
-      terms.forEach((term) => {
+      const safeNounFallbacks = ["同學", "老師", "書包", "鉛筆", "桌子", "水壺", "圖畫", "卡片"];
+      [...terms, ...fallbackTerms, ...safeNounFallbacks].forEach((term) => {
         const clean = String(term || "").replace(/\s/g, "");
-        if (clean && !result.includes(clean)) result.push(clean.slice(0, 2));
+        if (clean && !result.includes(clean)) result.push(clean.slice(0, 4));
       });
-
-      const skipTerms = new Set(["我有", "我會", "可以", "一起", "今天", "我們", "老師", "小朋", "朋友"]);
-      const storyChars = String(storyText.value || "").replace(/[^\u4e00-\u9fff]/g, "");
-      for (let i = 0; i < storyChars.length - 1 && result.length < 4; i += 2) {
-        const term = storyChars.slice(i, i + 2);
-        if (term.length === 2 && !result.includes(term) && !skipTerms.has(term)) {
-          result.push(term);
-        }
-      }
-
-      while (result.length < 4) result.push("");
       return result.slice(0, 4);
     }
 
-    function normalizePracticeText(value) {
-      return completePracticeTerms(getPracticeTerms(value)).join("、");
+    function normalizePracticeText(value, fallbackValue = "") {
+      return completePracticeTerms(getPracticeTerms(value), getPracticeTerms(fallbackValue)).join("、");
     }
 
     function renderPractice() {
-      const terms = completePracticeTerms(getPracticeTerms(practiceText.value));
+      const terms = completePracticeTerms(getPracticeTerms(practiceText.value), getPracticeTerms(state.active.practice));
       const grid = document.getElementById("practiceGrid");
       grid.innerHTML = "";
       const columns = [
@@ -1816,7 +2608,7 @@
         studentName.value = payload.name || "";
         customTitle.value = payload.title || "一年級國語注音學習單";
         storyText.value = payload.story || sheet.story;
-        practiceText.value = normalizePracticeText(payload.practice || sheet.practice);
+        practiceText.value = normalizePracticeText(payload.practice || sheet.practice, sheet.practice);
         questionText.value = payload.question || sheet.question;
         drawText.value = payload.drawing || sheet.drawing;
         rubyText.value = payload.ruby || "";
@@ -1839,7 +2631,6 @@
     });
 
     document.getElementById("randomBtn").addEventListener("click", randomSheet);
-    document.getElementById("printBtn").addEventListener("click", () => window.print());
     document.getElementById("applyBtn").addEventListener("click", render);
     document.getElementById("saveBtn").addEventListener("click", () => {
       saveCurrent();
